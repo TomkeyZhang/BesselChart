@@ -41,6 +41,9 @@ public class MainActivity extends Activity {
         points.add(new Point(7, 21000,true));
         points.add(new Point(8, 27000,true));
         points.add(new Point(9, 22000,true));
+        points.add(new Point(10, 26000,true));
+        points.add(new Point(11, 23000,true));
+        points.add(new Point(12, 24000,true));
         Series series1=new Series(Color.RED, points);
         seriess.add(series1);
         ChartData data=new ChartData();
@@ -57,9 +60,10 @@ public class MainActivity extends Activity {
             }
         });
         data.setSeriesList(seriess);
+//        chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
         chart.setData(data);
-        chart.setVelocityX(1.2f);
-        chart.setSmoothness(0.5f);
+//        chart.setVelocityX(1.2f);
+//        chart.setSmoothness(0.1f);
     }
 
 

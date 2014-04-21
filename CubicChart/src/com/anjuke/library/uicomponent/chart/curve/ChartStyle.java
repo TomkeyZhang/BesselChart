@@ -10,6 +10,11 @@ import android.graphics.Color;
  * @date :2014年4月17日
  */
 public class ChartStyle {
+    /** 背景颜色 */
+    private int backgroundColor;
+    /** 网格线颜色 */
+    private int gridColor;
+    
     /** 横坐标文本大小 */
     private float horizontalLabelTextSize;
     /** 横坐标文本颜色 */
@@ -23,6 +28,8 @@ public class ChartStyle {
     private int verticalLabelTextColor;
 
     public ChartStyle() {
+        backgroundColor=Color.WHITE;
+        gridColor=Color.LTGRAY;
     	horizontalLabelTextSize=36;
     	horizontalLabelTextColor=Color.GRAY;
         verticalLabelTextSize = 38;
@@ -69,5 +76,21 @@ public class ChartStyle {
 	public void setHorizontalLabelTextColor(int horizontalLabelTextColor) {
 		this.horizontalLabelTextColor = horizontalLabelTextColor;
 	}
+
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public int getGridColor() {
+        return gridColor;
+    }
+
+    public void setGridColor(int gridColor) {
+        this.gridColor = gridColor;
+    }
 
 }
