@@ -25,5 +25,9 @@ public class Series {
     public List<Point> getPoints() {
         return points;
     }
-
+    public void clearFixedCoordinateY(){
+    	for(Point point:points){
+    		point.fixedCoordinateY=0;
+    	}
+    }
 }

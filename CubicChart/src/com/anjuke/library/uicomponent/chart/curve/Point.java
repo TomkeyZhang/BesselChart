@@ -7,6 +7,8 @@ package com.anjuke.library.uicomponent.chart.curve;
 public class Point {
     /**是否在图形中绘制出此结点*/
     public boolean willDrawing;
+    /** 在canvas中的X贝塞尔修正过后的Y坐标 */
+    public float fixedCoordinateY;
     /** 在canvas中的X坐标 */
     public float coordinateX;
     /** 在canvas中的Y坐标 */

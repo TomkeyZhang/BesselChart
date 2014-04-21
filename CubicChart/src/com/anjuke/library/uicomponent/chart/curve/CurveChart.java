@@ -113,11 +113,15 @@ public class CurveChart extends View {
     private void drawCurve(Canvas canvas) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
+        Log.d("zqt", "drawCurve");
         for (Series series : data.getSeriesList()) {
             paint.setColor(series.getColor());
             List<Point> points = series.getPoints();
             updateCurvePath(points);
-            points=fixCurvePath(points);
+            fixCurvePath(points);
+            updateCurvePath(points);
+//            series.clearFixedCoordinateY();
+//            fixCurvePath(points);
 //            updateCurvePath(points);
 //            do {
 //                
@@ -144,11 +148,12 @@ public class CurveChart extends View {
             Point p3 = calc(points.get(nextIndex), points.get(nextNextIndex), firstMultiplier);
             curvePath.cubicTo(p1.coordinateX, p1.coordinateY, points.get(nextIndex).coordinateX, points.get(nextIndex).coordinateY, p3.coordinateX,
                     p3.coordinateY);
+            Log.d("zqt", "valueY="+points.get(nextIndex).valueY+" coordinateY="+points.get(nextIndex).coordinateY);
             // canvas.drawCircle(points.get(nextIndex).coordinateX, points.get(nextIndex).coordinateY, 5, paint);
         }
     }
 
-    private List<Point> fixCurvePath(List<Point> points) {
+    private void fixCurvePath(List<Point> points) {
         curvePathMeasure.setPath(curvePath, false);
         int length = (int) curvePathMeasure.getLength();
         Log.d("zqt", "fixCurvePath length="+length);
@@ -158,11 +163,17 @@ public class CurveChart extends View {
         boolean ok = true;
         int j=0;
         float distance=0;
-        for(float i=0;i<length;i++){
-            curvePathMeasure.getPosTan(distance, coords, null);
+        for(float i=0;i<=length;i++){
+            curvePathMeasure.getPosTan(i, coords, null);
             for(Point point : points){
-                if(Math.abs(point.coordinateY - coords[1])<1.2){
-                    Log.e("zqt", "bbb"+Math.abs(point.coordinateY - coords[1]));
+//            	float diff=Math.abs(point.coordinateY - coords[1]);
+            	float diff=Math.abs(point.coordinateX - coords[0]);
+                if(diff<1&&point.fixedCoordinateY==0){
+                	point.fixedCoordinateY=coords[1];
+                	point.coordinateY=point.coordinateY+(point.coordinateY-coords[1]);
+                    Log.e("zqt", "point.fixedCoordinateY="+point.fixedCoordinateY+"-point.coordinateY="+point.coordinateY);
+//                    Log.e("zqt", "diff="+diff+"-"+i);
+                    Log.e("zqt", "point="+point.valueY+"-"+Math.abs(point.coordinateY - coords[1]));
                     break;
                 }
                     
@@ -209,7 +220,7 @@ public class CurveChart extends View {
 //            }
 //        }
         
-        return ok ? null : pathPoints;
+//        return ok ? null : pathPoints;
     }
 
     /** 计算插值点 */
@@ -429,6 +440,7 @@ public class CurveChart extends View {
                 float pointWidth = xAxisWidth / points.size();
                 for (int i = 0; i < points.size(); i++) {
                     Point point = points.get(i);
+                    point.fixedCoordinateY=0;
                     // 计算数据点的坐标
                     point.coordinateX = pointWidth * (i + 0.5f);
                     float ratio = (point.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
