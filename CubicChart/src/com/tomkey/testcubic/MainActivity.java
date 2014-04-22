@@ -2,6 +2,7 @@ package com.tomkey.testcubic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,26 +32,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         chart=(CurveChart)findViewById(R.id.chart);
         List<Series> seriess=new ArrayList<Series>();
-        List<Point> points=new ArrayList<Point>();
-        points.add(new Point(1, 20000,true));
-        points.add(new Point(2, 21000,true));
-        points.add(new Point(3, 23000,true));
-        points.add(new Point(4, 22000,true));
-        points.add(new Point(5, 25000,true));
-        points.add(new Point(6, 20000,true));
-        points.add(new Point(7, 21000,true));
-        points.add(new Point(8, 27000,true));
-        points.add(new Point(9, 22000,true));
-        points.add(new Point(10, 26000,true));
-        points.add(new Point(11, 23000,true));
-        points.add(new Point(12, 24000,true));
-        Series series1=new Series(Color.RED, points);
-        seriess.add(series1);
+        seriess.add(getRandomSeries(Color.RED, false));
+        seriess.add(getRandomSeries(Color.GREEN, false));
         ChartData data=new ChartData();
         data.setLabelTransform(new LabelTransform() {
             
             @Override
             public String verticalTransform(int valueY) {
+                Log.d("zqt", "step valueY="+valueY);
                 return String.format("%.1f万", valueY/10000f);
             }
             
@@ -63,9 +52,23 @@ public class MainActivity extends Activity {
 //        chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
         chart.setData(data);
 //        chart.setVelocityX(1.2f);
-//        chart.setSmoothness(0.1f);
+//        chart.setSmoothness(0.5f);
     }
-
+    private Series getRandomSeries(int color,boolean willDrawing){
+        
+        List<Point> points=new ArrayList<Point>();
+        Random random=new Random();
+        if(willDrawing){
+            for(int i=0;i<12;i++){
+                points.add(new Point(i+1, 20000+1000*random.nextInt(10),true));
+            } 
+        }else{
+            for(int i=0;i<36;i++){
+                points.add(new Point(i+1, 20000+1000*random.nextInt(10),i%3==1));
+            } 
+        }
+        return new Series(color, points);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
