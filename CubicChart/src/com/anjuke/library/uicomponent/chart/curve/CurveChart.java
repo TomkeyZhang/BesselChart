@@ -107,12 +107,24 @@ public class CurveChart extends View {
         drawGrid(canvas);
         drawHorLabels(canvas);
         drawVerLabels(canvas);
+        drawSeriesTitle(canvas);
         lock=false;
 //        ann();
         ann2();
         
     }
-    public void paint(){
+    private void drawSeriesTitle(Canvas canvas) {
+    	List<Series> seriess=data.getSeriesList();
+    	paint.setTextAlign(Align.CENTER);
+    	paint.setTextSize(style.getHorizontalTitleTextSize());
+    	for(int i=0;i<seriess.size();i++){
+    		paint.setColor(style.getHorizontalTitleTextColor());
+    		Title title=seriess.get(i).getTitle();
+    		canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
+    	}
+	}
+
+	public void paint(){
         
     }
     Thread thread;
@@ -415,7 +427,7 @@ public class CurveChart extends View {
         paint.setTextSize(style.getHorizontalLabelTextSize());
         paint.setTextAlign(Align.CENTER);
         float endCoordinateX = info.xAxisWidth;
-        float coordinateY = getHeight() - info.xAxisHeight;
+        float coordinateY = getHeight() - info.xAxisHeight-info.xTitleHeight;
         canvas.drawLine(0, coordinateY, endCoordinateX, coordinateY, paint);
         for (Label label : data.getXLabels()) {
             // 绘制橫坐标文本
@@ -438,7 +450,7 @@ public class CurveChart extends View {
         paint.setTextSize(style.getVerticalLabelTextSize());
         paint.setTextAlign(Align.CENTER);
         canvas.drawLine(coordinateX, startCoordinateY, coordinateX, getHeight()
-                - info.xAxisHeight, paint);// 绘制纵坐标左边线条
+                - info.xAxisHeight-info.xTitleHeight, paint);// 绘制纵坐标左边线条
         for (Label label : data.getYLabels()) {
             // 绘制纵坐标文本
             // Y轴坐标要下面偏移半个文本的高度，这样可以使文本的中心跟坐标的中心重合,再往下偏移几个像素以便对齐（原因：主要是由于verticalTextRect矩形比实际的text在上方多了几个像素）
@@ -509,6 +521,8 @@ public class CurveChart extends View {
         private Rect verticalTextRect;
         /** 横坐标文本矩形 */
         private Rect horizontalTextRect;
+        /** 横坐标标题文本矩形 */
+        private Rect horizontalTitleRect;
         /** 画布X轴的平移，用于实现曲线图的滚动效果 */
         private float translateX;
         /** 上次触摸屏幕的X轴坐标，用于实现曲线图的滚动效果 */
@@ -521,6 +535,8 @@ public class CurveChart extends View {
         private float yAxisHeight;
         /** 横轴的高度 */
         private float xAxisHeight;
+        /** 横轴的标题的高度 */
+        private int xTitleHeight;
         /** 横轴的长度 */
         private float xAxisWidth;
 
@@ -531,6 +547,7 @@ public class CurveChart extends View {
             lastTouchEventX = -1;
             verticalTextRect = new Rect();
             horizontalTextRect = new Rect();
+            horizontalTitleRect = new Rect();
         }
 
         // /** 计算图形绘制的参数信息 */
@@ -584,6 +601,18 @@ public class CurveChart extends View {
                 label.coordinateX = labelWidth * (i + 0.5f);
                 label.coordinateY = height - horizontalTextRect.height() * 0.5f;
             }
+            paint.setTextSize(style.getHorizontalTitleTextSize());
+        	String titleText=data.getSeriesList().get(0).getTitle().text;
+        	paint.getTextBounds(titleText, 0, titleText.length(), horizontalTitleRect);
+        	xTitleHeight=horizontalTitleRect.height()*2;
+        	height=height+xTitleHeight;
+        	List<Series> seriess=data.getSeriesList();
+        	float stepX=info.xAxisWidth/2/seriess.size();
+        	for(int i=0;i<seriess.size();i++){
+        		Title title=seriess.get(i).getTitle();
+        		title.textCoordinateX=getTranslateCoordinateX((i+0.5f)*stepX);
+        		title.textCoordinateY=height-info.horizontalTitleRect.height()*0.7f;
+        	}
         }
 
         /** 计算序列的坐标信息 */

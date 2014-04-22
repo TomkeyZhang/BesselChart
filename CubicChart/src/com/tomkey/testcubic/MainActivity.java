@@ -32,8 +32,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         chart=(CurveChart)findViewById(R.id.chart);
         List<Series> seriess=new ArrayList<Series>();
-        seriess.add(getRandomSeries(Color.RED, false));
-        seriess.add(getRandomSeries(Color.GREEN, false));
+        seriess.add(getRandomSeries("蓝高小区",Color.RED, false));
+        seriess.add(getRandomSeries("塘桥",Color.GREEN, false));
+//        seriess.add(getRandomSeries("浦东",Color.MAGENTA, false));
         ChartData data=new ChartData();
         data.setLabelTransform(new LabelTransform() {
             
@@ -54,7 +55,7 @@ public class MainActivity extends Activity {
 //        chart.setVelocityX(1.2f);
 //        chart.setSmoothness(0.5f);
     }
-    private Series getRandomSeries(int color,boolean willDrawing){
+    private Series getRandomSeries(String title,int color,boolean willDrawing){
         
         List<Point> points=new ArrayList<Point>();
         Random random=new Random();
@@ -67,7 +68,7 @@ public class MainActivity extends Activity {
                 points.add(new Point(i+1, 20000+1000*random.nextInt(10),i%3==1));
             } 
         }
-        return new Series(color, points);
+        return new Series(title,color, points);
     }
 
     @Override
@@ -76,58 +77,5 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-    public class CubicView extends View{
-        Path p = new Path();
-        Paint mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
-//        RectF bounds = new RectF();
-        PathEffect effect=new CornerPathEffect(10);
-        
-        public CubicView(Context context) {
-            super(context);
-        }
-        private float start=0;
-        private float lastTouchEventX=-1;
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            Log.d("zqt", "onTouchEvent="+event.getAction());
-            
-            if(event.getAction()== MotionEvent.ACTION_MOVE&&lastTouchEventX>=0){
-                start=start+event.getX()-lastTouchEventX;
-                        invalidate();                        
-                Log.d("zqt", "onTouchEvent lastTouchEventX="+lastTouchEventX);
-            }
-            lastTouchEventX=event.getX();
-            return true;
-        }
-        @Override
-        protected void onDraw(Canvas canvas) {
-            canvas.drawColor(Color.WHITE);
-//            canvas.drawColor(0,android.graphics.PorterDuff.Mode.CLEAR);
-            p.reset();
-            canvas.translate(start, 0);
-            p.moveTo(0, 0);
-//            p.lineTo(2000, 500);
-            Log.d("zqt", "onDraw lastTouchEventX="+start);
-//            for (int i = 1; i <= 15; i++) {
-//                p.lineTo(i*200, (float)Math.random() * 1000);
-//            }
-            p.cubicTo(10, 20, 20, 30, 30, 40);
-            p.moveTo(20, 30);
-            p.cubicTo(30, 40, 80, 90, 100, 300);
-            p.moveTo(80, 90);
-            p.cubicTo(100, 300, 330, 200,340, 90);
-            p.moveTo(330, 200);
-            p.cubicTo(340, 90, 400, 200, 450, 270);
-            p.moveTo(400, 200);
-            p.cubicTo(450, 270, 500, 210, 530, 150);
-            p.moveTo(500, 210);
-            p.cubicTo(530, 150, 600, 290,650,300);
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(5);
-            mPaint.setColor(Color.GREEN);
-            mPaint.setPathEffect(effect);
-            canvas.drawPath(p, mPaint);
-//            canvas.translate(0, 28);
-        }
-    }
+    
 }

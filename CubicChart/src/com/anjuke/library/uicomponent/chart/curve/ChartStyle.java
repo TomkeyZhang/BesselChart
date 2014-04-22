@@ -19,6 +19,10 @@ public class ChartStyle {
     private float horizontalLabelTextSize;
     /** 横坐标文本颜色 */
     private int horizontalLabelTextColor;
+    /** 横坐标标题文本大小 */
+    private float horizontalTitleTextSize;
+    /** 横坐标标题文本颜色 */
+    private int horizontalTitleTextColor;
     
     /** 纵坐标文本大小 */
     private float verticalLabelTextSize;
@@ -30,6 +34,8 @@ public class ChartStyle {
     public ChartStyle() {
         backgroundColor=Color.WHITE;
         gridColor=Color.LTGRAY;
+        horizontalTitleTextSize=40;
+        horizontalTitleTextColor=Color.GRAY;
     	horizontalLabelTextSize=36;
     	horizontalLabelTextColor=Color.GRAY;
         verticalLabelTextSize = 38;
@@ -92,5 +98,21 @@ public class ChartStyle {
     public void setGridColor(int gridColor) {
         this.gridColor = gridColor;
     }
+
+	public float getHorizontalTitleTextSize() {
+		return horizontalTitleTextSize;
+	}
+
+	public void setHorizontalTitleTextSize(float horizontalTitleTextSize) {
+		this.horizontalTitleTextSize = horizontalTitleTextSize;
+	}
+
+	public int getHorizontalTitleTextColor() {
+		return horizontalTitleTextColor;
+	}
+
+	public void setHorizontalTitleTextColor(int horizontalTitleTextColor) {
+		this.horizontalTitleTextColor = horizontalTitleTextColor;
+	}
 
 }
