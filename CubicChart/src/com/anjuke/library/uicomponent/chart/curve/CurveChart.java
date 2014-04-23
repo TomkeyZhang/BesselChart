@@ -15,6 +15,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
+import com.anjuke.library.uicomponent.chart.curve.ChartData.Label;
+import com.anjuke.library.uicomponent.chart.curve.Series.Title;
+/**
+ * 曲线图
+ * @author tomkeyzhang（qitongzhang@anjuke.com）
+ * @date :2014年4月23日
+ */
 public class CurveChart extends View {
     /** 通用画笔 */
     private Paint paint;
@@ -88,7 +95,6 @@ public class CurveChart extends View {
         lock = true;
         canvas.drawColor(style.getBackgroundColor());
         translateCanvas(canvas);
-        // info.computeInfo();
         // 计算横轴的时候需使用纵轴的高度计算纵坐标，故先计算纵轴，再计算横轴
         info.computeVertcalAxisInfo();
         info.computeHorizontalAxisInfo();
@@ -109,25 +115,19 @@ public class CurveChart extends View {
         paint.setTextSize(style.getHorizontalTitleTextSize());
         for (int i = 0; i < seriess.size(); i++) {
             paint.setColor(seriess.get(i).getColor());
-            // paint.setColor(style.getHorizontalTitleTextColor());
             Title title = seriess.get(i).getTitle();
             canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
             canvas.drawCircle(title.circleCoordinateX, title.circleCoordinateY + 5, 10, paint);
         }
     }
-
-    public void paint() {
-
-    }
-
-    // int i=0;
+    /**在需要的时候启动动画*/
     private void startAnimateIfNeed() {
         if (animateThread == null) {
             animateThread = new AnimateThread();
             animateThread.start();
         }
     }
-
+    /**绘制网格线*/
     private void drawGrid(Canvas canvas) {
         paint.setStrokeWidth(1);
         paint.setStyle(Paint.Style.FILL);
@@ -147,22 +147,19 @@ public class CurveChart extends View {
         }
     }
 
-    /** 绘制曲线图 */
+    /** 绘制曲线和结点 */
     private void drawCurveAndPoints(Canvas canvas) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
         for (Series series : data.getSeriesList()) {
             paint.setColor(series.getColor());
             List<Point> points = series.getPoints();
-            updateCurvePath(points);
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawPath(curvePath, paint);
-            paint.setStyle(Paint.Style.FILL);
+            drawCurvePath(canvas,points);
             drawPoints(canvas, points);
         }
     }
-
-    private void updateCurvePath(List<Point> points) {
+    /**绘制曲线*/
+    private void drawCurvePath(Canvas canvas,List<Point> points) {
         curvePath.reset();
         curvePath.moveTo(points.get(0).coordinateX, points.get(0).coordinateY);
         int length = points.size();
@@ -176,9 +173,12 @@ public class CurveChart extends View {
             // Log.d("zqt", "valueY="+points.get(nextIndex).valueY+" coordinateY="+points.get(nextIndex).coordinateY);
             // canvas.drawCircle(points.get(nextIndex).coordinateX, points.get(nextIndex).coordinateY, 5, paint);
         }
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawPath(curvePath, paint);
     }
-
+    /**先修正结点，再绘制结点*/
     private void drawPoints(Canvas canvas, List<Point> points) {
+        paint.setStyle(Paint.Style.FILL);
         curvePathMeasure.setPath(curvePath, false);
         int length = (int) curvePathMeasure.getLength();
 //        Log.d("zqt", "fixCurvePath length=" + length);
@@ -435,7 +435,7 @@ public class CurveChart extends View {
             for (int i = 0; i < seriess.size(); i++) {
                 Title title = seriess.get(i).getTitle();
                 paint.getTextBounds(title.text, 0, title.text.length(), title.textRect);
-                title.textCoordinateX = x - (i + 0.5f) * stepX;
+                title.textCoordinateX = 30+x - (i + 0.5f) * stepX;
                 title.textCoordinateY = height - info.horizontalTitleRect.height() * 0.7f;
                 title.circleCoordinateX = title.textCoordinateX - title.textRect.width() / 2 - 20;
                 title.circleCoordinateY = title.textCoordinateY - info.horizontalTitleRect.height() * 0.5f;

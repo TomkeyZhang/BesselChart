@@ -61,8 +61,9 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
     }
     private ChartData getChartData(boolean willDrawing){
         List<Series> seriess=new ArrayList<Series>();
-        seriess.add(getRandomSeries("蓝高小区",Color.RED, willDrawing));
-        seriess.add(getRandomSeries("塘桥",Color.GREEN, willDrawing));
+        seriess.add(getRandomSeries("浦东",Color.LTGRAY, willDrawing));
+        seriess.add(getRandomSeries("陆家嘴",Color.GRAY, willDrawing));
+        seriess.add(getRandomSeries("奥林匹克花园",Color.RED, willDrawing));
 //        seriess.add(getRandomSeries("蓝高小区",Color.RED, false));
 //        seriess.add(getRandomSeries("塘桥",Color.GREEN, false));
 //        seriess.add(getRandomSeries("浦东",Color.MAGENTA, false));
@@ -72,7 +73,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
                 
                 @Override
                 public String verticalTransform(int valueY) {
-                    return String.format("%.1f万", valueY/10000f);
+                    return String.format("%.1fW", valueY/10000f);
                 }
                 
                 @Override
@@ -97,7 +98,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         @Override
         public String verticalTransform(int valueY) {
             Log.d("zqt", "step valueY="+valueY);
-            return String.format("%.1f万", valueY/10000f);
+            return String.format("%.1fW", valueY/10000f);
         }
         
         @Override
