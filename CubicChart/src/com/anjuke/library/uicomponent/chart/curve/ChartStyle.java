@@ -34,11 +34,11 @@ public class ChartStyle {
     public ChartStyle() {
         backgroundColor=Color.WHITE;
         gridColor=Color.LTGRAY;
-        horizontalTitleTextSize=40;
+        horizontalTitleTextSize=34;
         horizontalTitleTextColor=Color.GRAY;
-    	horizontalLabelTextSize=33;
+    	horizontalLabelTextSize=30;
     	horizontalLabelTextColor=Color.GRAY;
-        verticalLabelTextSize = 38;
+        verticalLabelTextSize = 34;
         verticalLabelTextPadding = 60;
         verticalLabelTextColor = Color.GRAY;
     }

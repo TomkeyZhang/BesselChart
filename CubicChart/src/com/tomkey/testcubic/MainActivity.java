@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.widget.ToggleButton;
 import com.anjuke.library.uicomponent.chart.curve.ChartData;
 import com.anjuke.library.uicomponent.chart.curve.ChartData.LabelTransform;
 import com.anjuke.library.uicomponent.chart.curve.CurveChart;
+import com.anjuke.library.uicomponent.chart.curve.Marker;
 import com.anjuke.library.uicomponent.chart.curve.Point;
 import com.anjuke.library.uicomponent.chart.curve.Series;
 
@@ -76,7 +78,9 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 //        seriess.add(getRandomSeries("塘桥",Color.GREEN, false));
 //        seriess.add(getRandomSeries("浦东",Color.MAGENTA, false));
         ChartData data=new ChartData();
+        int position=0;
         if(willDrawing){
+            position=12;
             data.setLabelTransform(new LabelTransform() {
                 
                 @Override
@@ -90,9 +94,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
                 }
             });
         }else{
+            position=36;
             data.setLabelTransform(new My36Transfer());
         }
-        
+        data.setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
         data.setSeriesList(seriess);
         return data;
     }

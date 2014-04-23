@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.anjuke.library.uicomponent.chart.curve.ChartData.Label;
-import com.anjuke.library.uicomponent.chart.curve.Series.Title;
 /**
  * 曲线图
  * @author tomkeyzhang（qitongzhang@anjuke.com）
@@ -102,17 +101,24 @@ public class CurveChart extends View {
         setHeight(info.height);
         drawCurveAndPoints(canvas);
         drawGrid(canvas);
+        drawMarker(canvas);
         drawHorLabels(canvas);
         drawVerLabels(canvas);
         drawSeriesTitle(canvas);
-        drawMarker(canvas);
         startAnimateIfNeed();
     }
 
     private void drawMarker(Canvas canvas) {
         Marker marker=data.getMarker();
         if(marker!=null){
-//            canvas.drawBitmap(bitmap, src, dst, paint);
+            paint.setAlpha(255);
+            Title title=marker.getTitle();
+            canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(marker.getPoint().coordinateX,marker.getPoint().coordinateY), paint);
+            canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(title.circleCoordinateX,title.circleCoordinateY+5), paint);
+            paint.setTextAlign(Align.CENTER);
+            paint.setTextSize(style.getHorizontalTitleTextSize());
+            paint.setColor(title.color);
+            canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
         }
     }
 
@@ -435,12 +441,21 @@ public class CurveChart extends View {
             xTitleHeight = horizontalTitleRect.height() * 2;
             height = height + xTitleHeight;
             List<Series> seriess = data.getSeriesList();
-            float stepX = xAxisWidth / 2f / seriess.size();
+            Marker marker=data.getMarker();
+            int count=marker!=null?seriess.size()+1:seriess.size();
+            float stepX = xAxisWidth / 2f / count;
 //            Log.d("zqt", "stepX=" + stepX);
             float x = getTranslateCoordinateX(getWidth()
                     - info.verticalTextRect.width() * 1.6f);
-            for (int i = 0; i < seriess.size(); i++) {
-                Title title = seriess.get(i).getTitle();
+            for (int i = 0; i <= seriess.size(); i++) {
+                Title title =null;
+                if(i<seriess.size()){
+                    title = seriess.get(i).getTitle();
+                }else if(marker!=null){
+                    title=marker.getTitle();
+                }else{
+                    return;
+                }
                 paint.getTextBounds(title.text, 0, title.text.length(), title.textRect);
                 title.textCoordinateX = 30+x - (i + 0.5f) * stepX;
                 title.textCoordinateY = height - info.horizontalTitleRect.height() * 0.7f;
@@ -448,7 +463,7 @@ public class CurveChart extends View {
                 title.circleCoordinateY = title.textCoordinateY - info.horizontalTitleRect.height() * 0.5f;
             }
         }
-
+        
         /** 计算序列的坐标信息 */
         private void computeSeriesCoordinate() {
             List<Label> yLabels = data.getYLabels();
@@ -472,7 +487,6 @@ public class CurveChart extends View {
                         markerPoint.coordinateX=point.coordinateX;
                         ratio=(markerPoint.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
                         markerPoint.coordinateY=maxCoordinateY - (maxCoordinateY - minCoordinateY) * ratio;
-//                        marker.getRect().
                     }
                     //Log.d("zqt", "ratio=" + ratio + " point.coordinateY=" + point.coordinateY);
                     // 计算竖直线的顶点

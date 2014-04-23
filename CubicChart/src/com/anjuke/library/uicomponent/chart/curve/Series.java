@@ -3,8 +3,6 @@ package com.anjuke.library.uicomponent.chart.curve;
 
 import java.util.List;
 
-import android.graphics.Rect;
-
 public class Series {
     /** 序列曲线的标题 */
     private Title title;
@@ -32,27 +30,6 @@ public class Series {
     public List<Point> getPoints() {
         return points;
     }
-    class Title {
-        /**文本对应的坐标X*/
-        public float textCoordinateX;
-        /**文本对应的坐标Y*/
-        public float textCoordinateY;
-        /**文本*/
-        public String text;
-        /**圆点对应的坐标X*/
-        public float circleCoordinateX;
-        /**圆点对应的坐标Y*/
-        public float circleCoordinateY;
-        /**圆点的颜色*/
-        public int color;
-        /**文本区域*/
-        public Rect textRect=new Rect();
-        public Title(String text, int color) {
-            this.text = text;
-            this.color = color;
-        }
-        
-        
-    }
+    
 
 }
