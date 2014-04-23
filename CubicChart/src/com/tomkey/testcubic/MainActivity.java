@@ -10,6 +10,7 @@ import java.util.Random;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.CompoundButton;
@@ -25,6 +26,7 @@ import com.anjuke.library.uicomponent.chart.curve.Series;
 public class MainActivity extends Activity implements OnCheckedChangeListener {
     CurveChart chart;
     ToggleButton button;
+    Handler handler=new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,9 +36,15 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         button.setOnCheckedChangeListener(this);
        
 //        chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
-        chart.setData(getChartData(true));
+//        chart.setData(getChartData(true));
 //        chart.setVelocityX(1.2f);
 //        chart.setSmoothness(0.5f);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                chart.setData(getChartData(true));
+            }
+        }, 1000);
     }
     private Series getRandomSeries(String title,int color,boolean willDrawing){
         

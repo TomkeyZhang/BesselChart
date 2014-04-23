@@ -4,8 +4,6 @@ package com.anjuke.library.uicomponent.chart.curve;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 /**
  * 曲线图的数据以及相关配置信息
  * 
@@ -13,6 +11,7 @@ import android.util.Log;
  * @date :2014年4月17日
  */
 public class ChartData {
+    private Marker marker;
     private List<Series> seriesList;
     private List<Label> xLabels;
     private List<Label> yLabels;
@@ -95,17 +94,13 @@ public class ChartData {
                     new Label(value, labelTransform.verticalTransform(value)));
         }
         maxValueY=value;
-        Log.d("zqt", "step="+step);
-        Log.d("zqt", "step minValueY="+minValueY);
-        Log.d("zqt", "step maxValueY="+maxValueY);
-    }
-    private void getMinCoordinateX() {
-        
+//        Log.d("zqt", "step="+step);
+//        Log.d("zqt", "step minValueY="+minValueY);
+//        Log.d("zqt", "step maxValueY="+maxValueY);
     }
     public void setLabelTransform(LabelTransform labelTransform) {
         this.labelTransform = labelTransform;
     }
-
     public List<Series> getSeriesList() {
         return seriesList;
     }
@@ -145,7 +140,12 @@ public class ChartData {
     public void setxLabelUsageSeries(int xLabelUsageSeries) {
         this.xLabelUsageSeries = xLabelUsageSeries;
     }
-
+    public void setMarker(Marker marker) {
+        this.marker = marker;
+    }
+    public Marker getMarker() {
+        return marker;
+    }
     public interface LabelTransform {
         /** 纵坐标显示的文本 */
         String verticalTransform(int valueY);
@@ -167,6 +167,5 @@ public class ChartData {
             this.value = value;
             this.text = text;
         }
-        
     }
 }

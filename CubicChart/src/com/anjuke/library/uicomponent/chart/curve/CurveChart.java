@@ -88,11 +88,11 @@ public class CurveChart extends View {
         return true;
     }
 
-    private boolean lock = false;
 
     @Override
     protected void onDraw(Canvas canvas) {
-        lock = true;
+        if(data.getSeriesList().size()==0)
+            return;
         canvas.drawColor(style.getBackgroundColor());
         translateCanvas(canvas);
         // 计算横轴的时候需使用纵轴的高度计算纵坐标，故先计算纵轴，再计算横轴
@@ -105,8 +105,15 @@ public class CurveChart extends View {
         drawHorLabels(canvas);
         drawVerLabels(canvas);
         drawSeriesTitle(canvas);
-        lock = false;
+        drawMarker(canvas);
         startAnimateIfNeed();
+    }
+
+    private void drawMarker(Canvas canvas) {
+        Marker marker=data.getMarker();
+        if(marker!=null){
+//            canvas.drawBitmap(bitmap, src, dst, paint);
+        }
     }
 
     private void drawSeriesTitle(Canvas canvas) {
@@ -330,7 +337,7 @@ public class CurveChart extends View {
                     run = false;
                 }
 //                Log.d("ann2", "info.translateX=" + info.translateX);
-                if (lock == false)
+//                if (lock == false)
                     postInvalidate();
             }
         };
@@ -459,7 +466,15 @@ public class CurveChart extends View {
                     float ratio = (point.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
 
                     point.coordinateY = maxCoordinateY - (maxCoordinateY - minCoordinateY) * ratio;
-//                    Log.d("zqt", "ratio=" + ratio + " point.coordinateY=" + point.coordinateY);
+                    Marker marker=data.getMarker();
+                    if(marker!=null&&marker.getPoint().valueX==point.valueX){
+                        Point markerPoint=marker.getPoint();
+                        markerPoint.coordinateX=point.coordinateX;
+                        ratio=(markerPoint.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
+                        markerPoint.coordinateY=maxCoordinateY - (maxCoordinateY - minCoordinateY) * ratio;
+//                        marker.getRect().
+                    }
+                    //Log.d("zqt", "ratio=" + ratio + " point.coordinateY=" + point.coordinateY);
                     // 计算竖直线的顶点
                     if (gridPoints[i] == null || gridPoints[i].valueY < point.valueY) {
                         gridPoints[i] = point;
