@@ -118,9 +118,11 @@ public class CurveChart extends View {
     	paint.setTextAlign(Align.CENTER);
     	paint.setTextSize(style.getHorizontalTitleTextSize());
     	for(int i=0;i<seriess.size();i++){
-    		paint.setColor(style.getHorizontalTitleTextColor());
+    	    paint.setColor(seriess.get(i).getColor());
+//    		paint.setColor(style.getHorizontalTitleTextColor());
     		Title title=seriess.get(i).getTitle();
     		canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
+    		canvas.drawCircle(title.circleCoordinateX, title.circleCoordinateY+5, 10, paint);
     	}
 	}
 
@@ -607,11 +609,16 @@ public class CurveChart extends View {
         	xTitleHeight=horizontalTitleRect.height()*2;
         	height=height+xTitleHeight;
         	List<Series> seriess=data.getSeriesList();
-        	float stepX=info.xAxisWidth/2/seriess.size();
+        	float stepX=xAxisWidth/2f/seriess.size();
+        	Log.d("zqt", "stepX="+stepX);
+        	float x = getTranslateCoordinateX(getWidth()
+                    - info.verticalTextRect.width() * 1.6f);
         	for(int i=0;i<seriess.size();i++){
         		Title title=seriess.get(i).getTitle();
-        		title.textCoordinateX=getTranslateCoordinateX((i+0.5f)*stepX);
+        		title.textCoordinateX=x-(i+0.5f)*stepX;
         		title.textCoordinateY=height-info.horizontalTitleRect.height()*0.7f;
+        		title.circleCoordinateX=title.textCoordinateX-info.horizontalTitleRect.width()/2-40;
+        		title.circleCoordinateY=title.textCoordinateY-info.horizontalTitleRect.height()*0.5f;
         	}
         }
 
