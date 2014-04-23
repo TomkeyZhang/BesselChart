@@ -1,5 +1,7 @@
 package com.anjuke.library.uicomponent.chart.curve;
 
+import android.graphics.Rect;
+
 public class Title {
 	/**文本对应的坐标X*/
     public float textCoordinateX;
@@ -13,6 +15,8 @@ public class Title {
     public float circleCoordinateY;
     /**圆点的颜色*/
     public int color;
+    /**文本区域*/
+    public Rect textRect=new Rect();
 	public Title(String text, int color) {
 		this.text = text;
 		this.color = color;

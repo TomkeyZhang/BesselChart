@@ -36,7 +36,7 @@ public class ChartStyle {
         gridColor=Color.LTGRAY;
         horizontalTitleTextSize=40;
         horizontalTitleTextColor=Color.GRAY;
-    	horizontalLabelTextSize=36;
+    	horizontalLabelTextSize=33;
     	horizontalLabelTextColor=Color.GRAY;
         verticalLabelTextSize = 38;
         verticalLabelTextPadding = 60;
