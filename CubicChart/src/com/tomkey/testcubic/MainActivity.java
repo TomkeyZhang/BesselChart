@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         chart = (CurveChart) findViewById(R.id.chart);
         button = (ToggleButton) findViewById(R.id.toggle_btn);
         button.setOnCheckedChangeListener(this);
-        // startActivity(new Intent(this, CubicActivity.class));
+         startActivity(new Intent(this, CubicActivity.class));
         // chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
         // chart.setData(getChartData(true));
         // chart.setVelocityX(1.2f);

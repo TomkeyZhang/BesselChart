@@ -129,7 +129,12 @@ public class CurveChart extends View {
 //        info.lastTouchEventX = event.getX();
         return event.getAction() == MotionEvent.ACTION_DOWN;
     }
-
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        // TODO Auto-generated method stub
+        return super.dispatchTouchEvent(event);
+    }
+    
     @Override
     protected void onDraw(Canvas canvas) {
 //        Log.d("zqt", "CurveChart onDraw"+repaint);
