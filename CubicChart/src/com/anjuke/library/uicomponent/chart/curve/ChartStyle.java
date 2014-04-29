@@ -26,8 +26,10 @@ public class ChartStyle {
     
     /** 纵坐标文本大小 */
     private float verticalLabelTextSize;
-    /** 纵坐标文本间距 */
+    /** 纵坐标文本上下间距 */
     private int verticalLabelTextPadding;
+    /** 纵坐标文本左右间距相对文本的比例 */
+    private float verticalLabelTextPaddingRate;
     /** 纵坐标文本颜色 */
     private int verticalLabelTextColor;
 
@@ -41,6 +43,7 @@ public class ChartStyle {
         verticalLabelTextSize = 34;
         verticalLabelTextPadding = 60;
         verticalLabelTextColor = Color.GRAY;
+        verticalLabelTextPaddingRate=0.2f;
     }
 
     public float getVerticalLabelTextSize() {
@@ -114,5 +117,13 @@ public class ChartStyle {
 	public void setHorizontalTitleTextColor(int horizontalTitleTextColor) {
 		this.horizontalTitleTextColor = horizontalTitleTextColor;
 	}
+
+    public float getVerticalLabelTextPaddingRate() {
+        return verticalLabelTextPaddingRate;
+    }
+
+    public void setVerticalLabelTextPaddingRate(float verticalLabelTextPaddingRate) {
+        this.verticalLabelTextPaddingRate = verticalLabelTextPaddingRate;
+    }
 
 }

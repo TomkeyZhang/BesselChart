@@ -1,6 +1,7 @@
 
 package com.anjuke.library.uicomponent.chart.curve;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -11,13 +12,16 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.anjuke.library.uicomponent.chart.curve.ChartData.Label;
+
 /**
  * 曲线图
+ * 
  * @author tomkeyzhang（qitongzhang@anjuke.com）
  * @date :2014年4月23日
  */
@@ -43,6 +47,8 @@ public class CurveChart extends View {
     private float secondMultiplier;
     /** 动画线程 */
     private AnimateThread animateThread;
+    private GestureDetector detector;
+    private boolean repaint;
 
     public CurveChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -69,36 +75,75 @@ public class CurveChart extends View {
         firstMultiplier = 0.33f;
         // 默认偏移第二个点67%的距离.
         secondMultiplier = 1 - firstMultiplier;
-
+        repaint=true;
         style = new ChartStyle();
         data = new ChartData();
+        detector=new GestureDetector(getContext(), new GestureDetector.OnGestureListener(){
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                if(Math.abs(distanceX/distanceY)>1){
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    info.translateX = info.translateX
+                            - distanceX * velocityX;// 计算画布平移距离
+//                    repaint=true;
+                    invalidate();
+                }
+//                Log.d("zqt", "onScroll "+distanceX);
+                return false;
+            }
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//                Log.d("zqt", "onFling "+velocityX);
+                return false;
+            }
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+//                Log.d("zqt", "onSingleTapUp "+e);
+                return false;
+            }
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return false;
+            }
+            @Override
+            public void onShowPress(MotionEvent e) {
+            }
+            @Override
+            public void onLongPress(MotionEvent e) {
+            }
+        });
     }
-
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent event) {
+//        Log.d("zqt", "dispatchTouchEvent");
+//        return detector.onTouchEvent(event);
+//    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_MOVE
-                && info.lastTouchEventX >= 0) {
-            info.translateX = info.translateX
-                    + (event.getX() - info.lastTouchEventX) * velocityX;// 计算画布平移距离
-//            Log.d("zqt", "onTouchEvent info.translateX=" + info.translateX);
-            invalidate();
-        }
-        info.lastTouchEventX = event.getX();
-        return true;
+        detector.onTouchEvent(event);
+//        return detector.onTouchEvent(event);
+//        if (event.getAction() == MotionEvent.ACTION_MOVE
+//                && info.lastTouchEventX >= 0) {
+//            
+//        }
+//        info.lastTouchEventX = event.getX();
+        return event.getAction() == MotionEvent.ACTION_DOWN;
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if(data.getSeriesList().size()==0)
+//        Log.d("zqt", "CurveChart onDraw"+repaint);
+        if (data.getSeriesList().size() == 0)
             return;
         canvas.drawColor(style.getBackgroundColor());
         translateCanvas(canvas);
-        // 计算横轴的时候需使用纵轴的高度计算纵坐标，故先计算纵轴，再计算横轴
+     // 计算横轴的时候需使用纵轴的高度计算纵坐标，故先计算纵轴，再计算横轴
         info.computeVertcalAxisInfo();
         info.computeHorizontalAxisInfo();
-        info.computeSeriesCoordinate();
-        setHeight(info.height);
+        if(repaint){
+            info.computeSeriesCoordinate();
+            setHeight(info.height);
+        }
         drawCurveAndPoints(canvas);
         drawGrid(canvas);
         drawMarker(canvas);
@@ -106,22 +151,17 @@ public class CurveChart extends View {
         drawVerLabels(canvas);
         drawSeriesTitle(canvas);
         startAnimateIfNeed();
+        repaint=false;
     }
-
+    /**绘制曲线图中的房源*/
     private void drawMarker(Canvas canvas) {
-        Marker marker=data.getMarker();
-        if(marker!=null){
+        Marker marker = data.getMarker();
+        if (marker != null) {
             paint.setAlpha(255);
-            Title title=marker.getTitle();
-            canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(marker.getPoint().coordinateX,marker.getPoint().coordinateY), paint);
-            canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(title.circleCoordinateX,title.circleCoordinateY+5), paint);
-            paint.setTextAlign(Align.CENTER);
-            paint.setTextSize(style.getHorizontalTitleTextSize());
-            paint.setColor(title.color);
-            canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
+            canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(marker.getPoint().coordinateX, marker.getPoint().coordinateY,marker.getWidth(),marker.getHeight()), paint);
         }
     }
-
+    /**绘制序列标题*/
     private void drawSeriesTitle(Canvas canvas) {
         List<Series> seriess = data.getSeriesList();
         paint.setTextAlign(Align.CENTER);
@@ -129,18 +169,31 @@ public class CurveChart extends View {
         for (int i = 0; i < seriess.size(); i++) {
             paint.setColor(seriess.get(i).getColor());
             Title title = seriess.get(i).getTitle();
+            canvas.drawCircle(title.circleCoordinateX, title.circleCoordinateY + 5, title.radius, paint);
+            paint.setAlpha(255);
             canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
-            canvas.drawCircle(title.circleCoordinateX, title.circleCoordinateY + 5, 10, paint);
+        }
+        Marker marker = data.getMarker();
+        if (marker != null) {
+            paint.setAlpha(255);
+            Title title = marker.getTitle();
+            canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(title.circleCoordinateX, title.circleCoordinateY + 5,title.radius*2,title.radius*2), paint);
+            paint.setTextAlign(Align.CENTER);
+            paint.setTextSize(style.getHorizontalTitleTextSize());
+            paint.setColor(title.color);
+            canvas.drawText(title.text, title.textCoordinateX, title.textCoordinateY, paint);
         }
     }
-    /**在需要的时候启动动画*/
+
+    /** 在需要的时候启动动画 */
     private void startAnimateIfNeed() {
         if (animateThread == null) {
             animateThread = new AnimateThread();
             animateThread.start();
         }
     }
-    /**绘制网格线*/
+
+    /** 绘制网格线 */
     private void drawGrid(Canvas canvas) {
         paint.setStrokeWidth(1);
         paint.setStyle(Paint.Style.FILL);
@@ -155,7 +208,7 @@ public class CurveChart extends View {
         // canvas.drawLine(0, label.coordinateY, info.xAxisWidth, label.coordinateY, paint);
         // }
         for (Point point : info.gridPoints) {
-            if (point.willDrawing)
+            if (point.willDrawing&&point.valueY>0)
                 canvas.drawLine(point.coordinateX, point.fixedCoordinateY, point.coordinateX, info.yAxisHeight, paint);
         }
     }
@@ -167,21 +220,32 @@ public class CurveChart extends View {
         for (Series series : data.getSeriesList()) {
             paint.setColor(series.getColor());
             List<Point> points = series.getPoints();
-            drawCurvePath(canvas,points);
+            for(Point point:points){
+                point.fixedCoordinateY=0;
+            }
+            drawCurvePath(canvas, points);
             drawPoints(canvas, points);
         }
     }
-    /**绘制曲线*/
-    private void drawCurvePath(Canvas canvas,List<Point> points) {
+
+    /** 绘制曲线 */
+    private void drawCurvePath(Canvas canvas, List<Point> points) {
         curvePath.reset();
-        curvePath.moveTo(points.get(0).coordinateX, points.get(0).coordinateY);
-        int length = points.size();
+        List<Point> drawPoints=new ArrayList<Point>();
+        for(Point point:points){
+            if(point.valueY>0)
+                drawPoints.add(point);
+        }
+        if(drawPoints.size()==0)
+            return;
+        curvePath.moveTo(drawPoints.get(0).coordinateX, drawPoints.get(0).coordinateY);
+        int length = drawPoints.size();
         for (int i = 0; i < length; i++) {
             int nextIndex = i + 1 < length ? i + 1 : i;
             int nextNextIndex = i + 2 < length ? i + 2 : nextIndex;
-            Point p1 = calc(points.get(i), points.get(nextIndex), secondMultiplier);
-            Point p3 = calc(points.get(nextIndex), points.get(nextNextIndex), firstMultiplier);
-            curvePath.cubicTo(p1.coordinateX, p1.coordinateY, points.get(nextIndex).coordinateX, points.get(nextIndex).coordinateY, p3.coordinateX,
+            Point p1 = calc(drawPoints.get(i), drawPoints.get(nextIndex), secondMultiplier);
+            Point p3 = calc(drawPoints.get(nextIndex), drawPoints.get(nextNextIndex), firstMultiplier);
+            curvePath.cubicTo(p1.coordinateX, p1.coordinateY, drawPoints.get(nextIndex).coordinateX, drawPoints.get(nextIndex).coordinateY, p3.coordinateX,
                     p3.coordinateY);
             // Log.d("zqt", "valueY="+points.get(nextIndex).valueY+" coordinateY="+points.get(nextIndex).coordinateY);
             // canvas.drawCircle(points.get(nextIndex).coordinateX, points.get(nextIndex).coordinateY, 5, paint);
@@ -189,12 +253,13 @@ public class CurveChart extends View {
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawPath(curvePath, paint);
     }
-    /**先修正结点，再绘制结点*/
+
+    /** 先修正结点，再绘制结点 */
     private void drawPoints(Canvas canvas, List<Point> points) {
         paint.setStyle(Paint.Style.FILL);
         curvePathMeasure.setPath(curvePath, false);
         int length = (int) curvePathMeasure.getLength();
-//        Log.d("zqt", "fixCurvePath length=" + length);
+        // Log.d("zqt", "fixCurvePath length=" + length);
         float[] coords = new float[2];
         for (float i = 0; i <= length; i++) {
             curvePathMeasure.getPosTan(i, coords, null);
@@ -202,14 +267,15 @@ public class CurveChart extends View {
                 float diff = Math.abs(point.coordinateX - coords[0]);
                 if (diff < 1 && point.fixedCoordinateY == 0) {
                     point.fixedCoordinateY = coords[1];
-                    if (point.willDrawing) {
+                    if (point.willDrawing&&point.valueY>0) {
                         canvas.drawCircle(point.coordinateX, point.fixedCoordinateY, 5, paint);
                         paint.setAlpha(80);
                         canvas.drawCircle(point.coordinateX, point.fixedCoordinateY, 10, paint);
                         paint.setAlpha(255);
                     }
-//                    Log.e("zqt", "point.fixedCoordinateY=" + point.fixedCoordinateY + "-point.coordinateY=" + point.coordinateY);
-//                    Log.e("zqt", "point=" + point.valueY + "-" + Math.abs(point.coordinateY - coords[1]));
+                    // Log.e("zqt", "point.fixedCoordinateY=" + point.fixedCoordinateY + "-point.coordinateY=" +
+                    // point.coordinateY);
+                    // Log.e("zqt", "point=" + point.valueY + "-" + Math.abs(point.coordinateY - coords[1]));
                     int index = points.indexOf(point);
                     // 计算竖直线的顶点
                     if (info.gridPoints[index] == null || info.gridPoints[index].valueY < point.valueY) {
@@ -234,7 +300,7 @@ public class CurveChart extends View {
 
     /** 变换画布 */
     private void translateCanvas(Canvas canvas) {
-//        Log.d("zqt", "info.translateX=" + info.translateX);
+        // Log.d("zqt", "info.translateX=" + info.translateX);
         if (info.translateX >= 0) {
             info.translateX = 0;
             canvas.translate(0, 0);
@@ -244,8 +310,8 @@ public class CurveChart extends View {
             }
             canvas.translate(info.translateX, 0);
         }
-//        Log.d("zqt", "info.translateX=" + info.translateX + " info.xAxisWidth="
-//                + info.xAxisWidth);
+        // Log.d("zqt", "info.translateX=" + info.translateX + " info.xAxisWidth="
+        // + info.xAxisWidth);
 
     }
 
@@ -268,7 +334,7 @@ public class CurveChart extends View {
 
     /** 绘制纵轴 */
     protected void drawVerLabels(Canvas canvas) {
-        float coordinateX = data.getYLabels().get(0).coordinateX - info.verticalTextRect.width() * 0.8f;
+        float coordinateX = data.getYLabels().get(0).coordinateX - info.verticalTextRect.width() * (0.5f + style.getVerticalLabelTextPaddingRate());
         float startCoordinateY = data.getYLabels().get(0).coordinateY;
         paint.setColor(style.getBackgroundColor());
         paint.setStyle(Paint.Style.FILL);
@@ -303,7 +369,8 @@ public class CurveChart extends View {
     public void setData(ChartData data) {
         this.data = data;
         info.translateX = 0;
-        animateThread=null;
+        animateThread = null;
+        repaint=true;
         invalidate();
     }
 
@@ -342,9 +409,10 @@ public class CurveChart extends View {
                 if (info.translateX < -info.xAxisWidth / 2) {
                     run = false;
                 }
-//                Log.d("ann2", "info.translateX=" + info.translateX);
-//                if (lock == false)
-                    postInvalidate();
+                // Log.d("ann2", "info.translateX=" + info.translateX);
+                // if (lock == false)
+//                repaint=true;
+                postInvalidate();
             }
         };
     }
@@ -400,15 +468,15 @@ public class CurveChart extends View {
             String maxText = getMaxText(yLabels);
             paint.getTextBounds(maxText, 0, maxText.length(), verticalTextRect);
             float x = getTranslateCoordinateX(getWidth()
-                    - info.verticalTextRect.width() * 0.8f);
+                    - info.verticalTextRect.width() * (0.5f + style.getVerticalLabelTextPaddingRate()));
             for (int i = 0; i < yLabelCount; i++) {
                 Label label = yLabels.get(i);
                 label.coordinateX = x;
                 label.coordinateY = verticalTextRect.height() * (i + 1)
                         + style.getVerticalLabelTextPadding() * (i + 0.5f);
-//                Log.d("zqt", "label.coordinateY=" + label.coordinateY);
+                // Log.d("zqt", "label.coordinateY=" + label.coordinateY);
             }
-            yAxisWidth = info.verticalTextRect.width() * 1.6f;
+            yAxisWidth = info.verticalTextRect.width() * (1 + style.getVerticalLabelTextPaddingRate() * 2);
             yAxisHeight = verticalTextRect.height() * yLabelCount
                     + style.getVerticalLabelTextPadding() * yLabelCount;
         }
@@ -418,17 +486,17 @@ public class CurveChart extends View {
             xAxisWidth = 2 * (getWidth() - yAxisWidth);
             paint.setTextSize(style.getHorizontalLabelTextSize());
             List<Label> xLabels = data.getXLabels();
-//            String maxText = getMaxText(xLabels);// 取得最长的文本
+            // String maxText = getMaxText(xLabels);// 取得最长的文本
             String measureText = "张";
             paint.getTextBounds(measureText, 0, measureText.length(),
                     horizontalTextRect);
             xAxisHeight = horizontalTextRect.height() * 2;
             height = (int) (yAxisHeight + xAxisHeight);// 图形的高度计算完毕
-//            float minXAxisWidth = xLabels.size() * horizontalTextRect.width()
-//                    * 1.5f;// 对横轴长度大小做一个限制，以免横轴文字过于拥挤
-//            if (xAxisWidth < minXAxisWidth) {
-//                xAxisWidth = minXAxisWidth;
-//            }
+            // float minXAxisWidth = xLabels.size() * horizontalTextRect.width()
+            // * 1.5f;// 对横轴长度大小做一个限制，以免横轴文字过于拥挤
+            // if (xAxisWidth < minXAxisWidth) {
+            // xAxisWidth = minXAxisWidth;
+            // }
             float labelWidth = xAxisWidth / xLabels.size();
             for (int i = 0; i < xLabels.size(); i++) {
                 Label label = xLabels.get(i);
@@ -441,35 +509,43 @@ public class CurveChart extends View {
             xTitleHeight = horizontalTitleRect.height() * 2;
             height = height + xTitleHeight;
             List<Series> seriess = data.getSeriesList();
-            Marker marker=data.getMarker();
-            int count=marker!=null?seriess.size()+1:seriess.size();
-            float stepX = xAxisWidth / 2f / count;
-//            Log.d("zqt", "stepX=" + stepX);
+            Marker marker = data.getMarker();
+            int count = marker != null ? seriess.size() + 1 : seriess.size();
+            float stepX = getWidth() / count;
+            // Log.d("zqt", "stepX=" + stepX);
             float x = getTranslateCoordinateX(getWidth()
-                    - info.verticalTextRect.width() * 1.6f);
-            for (int i = 0; i <= seriess.size(); i++) {
-                Title title =null;
-                if(i<seriess.size()){
+                    );
+            for (int i = -1; i < seriess.size(); i++) {
+                Title title = null;
+                if(i>=0){
                     title = seriess.get(i).getTitle();
+                    title.radius=10;
                 }else if(marker!=null){
                     title=marker.getTitle();
+                    title.radius=15;
                 }else{
-                    return;
+                    continue;
                 }
-                paint.getTextBounds(title.text, 0, title.text.length(), title.textRect);
-                title.textCoordinateX = 30+x - (i + 0.5f) * stepX;
-                title.textCoordinateY = height - info.horizontalTitleRect.height() * 0.7f;
-                title.circleCoordinateX = title.textCoordinateX - title.textRect.width() / 2 - 20;
+                title.circleTextPadding=20;
+                title.updateTextRect(paint,stepX);
+                title.textCoordinateX = 30 + x - (i + (data.getMarker()!=null?1.5f:0.5f)) * stepX;
+                title.textCoordinateY = height-10;
+                title.circleCoordinateX = title.textCoordinateX - title.textRect.width() / 2 - title.circleTextPadding;
                 title.circleCoordinateY = title.textCoordinateY - info.horizontalTitleRect.height() * 0.5f;
             }
         }
-        
+
         /** 计算序列的坐标信息 */
         private void computeSeriesCoordinate() {
             List<Label> yLabels = data.getYLabels();
             float minCoordinateY = yLabels.get(0).coordinateY;
             float maxCoordinateY = yLabels.get(yLabels.size() - 1).coordinateY;
-            gridPoints = new Point[data.getSeriesList().get(0).getPoints().size()];
+            int length=0;
+            for(Series series:data.getSeriesList()){
+                if(series.getPoints().size()>length)
+                    length=series.getPoints().size();
+            }
+            gridPoints = new Point[length];
             for (Series series : data.getSeriesList()) {
                 List<Point> points = series.getPoints();
                 float pointWidth = xAxisWidth / points.size();
@@ -481,19 +557,20 @@ public class CurveChart extends View {
                     float ratio = (point.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
 
                     point.coordinateY = maxCoordinateY - (maxCoordinateY - minCoordinateY) * ratio;
-                    Marker marker=data.getMarker();
-                    if(marker!=null&&marker.getPoint().valueX==point.valueX){
-                        Point markerPoint=marker.getPoint();
-                        markerPoint.coordinateX=point.coordinateX;
-                        ratio=(markerPoint.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
-                        markerPoint.coordinateY=maxCoordinateY - (maxCoordinateY - minCoordinateY) * ratio;
+                    Marker marker = data.getMarker();
+                    if (marker != null && marker.getPoint().valueX == point.valueX) {
+                        Point markerPoint = marker.getPoint();
+                        markerPoint.coordinateX = point.coordinateX;
+                        ratio = (markerPoint.valueY - data.getMinValueY()) / (float) (data.getMaxValueY() - data.getMinValueY());
+                        markerPoint.coordinateY = maxCoordinateY - (maxCoordinateY - minCoordinateY) * ratio;
                     }
-                    //Log.d("zqt", "ratio=" + ratio + " point.coordinateY=" + point.coordinateY);
+                    // Log.d("zqt", "ratio=" + ratio + " point.coordinateY=" + point.coordinateY);
                     // 计算竖直线的顶点
                     if (gridPoints[i] == null || gridPoints[i].valueY < point.valueY) {
                         gridPoints[i] = point;
                     }
-//                    Log.d("zqt", "point.coordinateX:" + point.coordinateX + " point.coordinateY:" + point.coordinateY);
+                    // Log.d("zqt", "point.coordinateX:" + point.coordinateX + " point.coordinateY:" +
+                    // point.coordinateY);
                 }
             }
         }

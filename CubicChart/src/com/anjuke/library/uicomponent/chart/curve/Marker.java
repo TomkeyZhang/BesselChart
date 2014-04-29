@@ -51,7 +51,7 @@ public class Marker {
         return rect;
     }
 
-    public Rect updateRect(float coordinateX,float coordinateY) {
+    public Rect updateRect(float coordinateX,float coordinateY,int width,int height) {
         rect.left = (int) (coordinateX - width / 2);
         rect.right = (int) (coordinateX + width / 2);
         rect.top = (int) (coordinateY - height / 2);

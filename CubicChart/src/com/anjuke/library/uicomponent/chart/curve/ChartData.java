@@ -38,6 +38,11 @@ public class ChartData {
             public String horizontalTransform(int valueX) {
                 return String.valueOf(valueX);
             }
+
+            @Override
+            public boolean labelDrawing(int valueX) {
+                return true;
+            }
         };
         yLabelCount = 4;// 默认纵轴显示4个文本
         xLabelUsageSeries = 0;// 默认横轴使用第一个序列来显示文本
@@ -59,7 +64,7 @@ public class ChartData {
     private void resetXLabels() {
         xLabels.clear();
         for (Point point : seriesList.get(xLabelUsageSeries).getPoints()) {
-            if (point.willDrawing)
+            if (labelTransform.labelDrawing(point.valueX))
                 xLabels.add(new Label(point.valueX, labelTransform
                         .horizontalTransform(point.valueX)));
         }
@@ -73,7 +78,7 @@ public class ChartData {
             for (Point point : series.getPoints()) {
                 if (point.valueY > maxValueY)
                     maxValueY = point.valueY;
-                if (point.valueY < minValueY)
+                if (point.valueY>0&&point.valueY < minValueY)
                     minValueY = point.valueY;
             }
         }
@@ -152,6 +157,8 @@ public class ChartData {
 
         /** 横坐标显示的文本 */
         String horizontalTransform(int valueX);
+        /** 横坐标显示的文本 */
+        boolean labelDrawing(int valueX);
 
     }
     class Label {
