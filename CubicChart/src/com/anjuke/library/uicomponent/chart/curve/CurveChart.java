@@ -181,7 +181,7 @@ public class CurveChart extends View {
         Marker marker = data.getMarker();
         if (marker != null) {
             paint.setAlpha(255);
-            Title title = marker.getTitle();
+            Title title = marker;
             canvas.drawBitmap(marker.getBitmap(), null, marker.updateRect(title.circleCoordinateX, title.circleCoordinateY + 5,title.radius*2,title.radius*2), paint);
             paint.setTextAlign(Align.CENTER);
             paint.setTextSize(style.getHorizontalTitleTextSize());
@@ -392,7 +392,7 @@ public class CurveChart extends View {
         firstMultiplier = smoothness;
         secondMultiplier = 1 - firstMultiplier;
     }
-
+    /**自动滚动动画*/
     private class AnimateThread extends Thread {
         private boolean run = true;
 
@@ -414,9 +414,6 @@ public class CurveChart extends View {
                 if (info.translateX < -info.xAxisWidth / 2) {
                     run = false;
                 }
-                // Log.d("ann2", "info.translateX=" + info.translateX);
-                // if (lock == false)
-//                repaint=true;
                 postInvalidate();
             }
         };
@@ -431,8 +428,6 @@ public class CurveChart extends View {
         private Rect horizontalTitleRect;
         /** 画布X轴的平移，用于实现曲线图的滚动效果 */
         private float translateX;
-        /** 上次触摸屏幕的X轴坐标，用于实现曲线图的滚动效果 */
-        private float lastTouchEventX;
         /** 图形的高度 */
         private int height;
         /** 纵轴的宽度 */
@@ -450,7 +445,6 @@ public class CurveChart extends View {
 
         public DrawingInfo() {
             translateX = 0;
-            lastTouchEventX = -1;
             verticalTextRect = new Rect();
             horizontalTextRect = new Rect();
             horizontalTitleRect = new Rect();
@@ -526,7 +520,7 @@ public class CurveChart extends View {
                     title = seriess.get(i).getTitle();
                     title.radius=10;
                 }else if(marker!=null){
-                    title=marker.getTitle();
+                    title=marker;
                     title.radius=15;
                 }else{
                     continue;

@@ -14,6 +14,8 @@ public class ChartStyle {
     private int backgroundColor;
     /** 网格线颜色 */
     private int gridColor;
+    /** 坐标轴分隔线宽度 */
+    private int axisLineWidth;
     
     /** 横坐标文本大小 */
     private float horizontalLabelTextSize;
@@ -44,6 +46,7 @@ public class ChartStyle {
         verticalLabelTextPadding = 60;
         verticalLabelTextColor = Color.GRAY;
         verticalLabelTextPaddingRate=0.2f;
+        axisLineWidth=2;
     }
 
     public float getVerticalLabelTextSize() {
@@ -125,5 +128,10 @@ public class ChartStyle {
     public void setVerticalLabelTextPaddingRate(float verticalLabelTextPaddingRate) {
         this.verticalLabelTextPaddingRate = verticalLabelTextPaddingRate;
     }
-
+    public int getAxisLineWidth() {
+        return axisLineWidth;
+    }
+    public void setAxisLineWidth(int axisLineWidth) {
+        this.axisLineWidth = axisLineWidth;
+    }
 }

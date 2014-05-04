@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Random;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,15 +19,14 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
-import com.anjuke.library.uicomponent.chart.curve.ChartData;
+import com.anjuke.library.uicomponent.chart.curve.BesselChart;
 import com.anjuke.library.uicomponent.chart.curve.ChartData.LabelTransform;
-import com.anjuke.library.uicomponent.chart.curve.CurveChart;
 import com.anjuke.library.uicomponent.chart.curve.Marker;
 import com.anjuke.library.uicomponent.chart.curve.Point;
 import com.anjuke.library.uicomponent.chart.curve.Series;
 
 public class MainActivity extends Activity implements OnCheckedChangeListener {
-    CurveChart chart;
+    BesselChart chart;
     ToggleButton button;
     Handler handler = new Handler();
 
@@ -36,10 +34,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        chart = (CurveChart) findViewById(R.id.chart);
+        chart = (BesselChart) findViewById(R.id.chart);
         button = (ToggleButton) findViewById(R.id.toggle_btn);
         button.setOnCheckedChangeListener(this);
-         startActivity(new Intent(this, CubicActivity.class));
+//         startActivity(new Intent(this, CubicActivity.class));
         // chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
         // chart.setData(getChartData(true));
         // chart.setVelocityX(1.2f);
@@ -47,7 +45,8 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                chart.setData(getChartData(true));
+//                chart.setData(getChartData(true));
+                getSeriesList(true);
             }
         }, 1000);
     }
@@ -79,7 +78,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         return true;
     }
 
-    private ChartData getChartData(boolean willDrawing) {
+    private void getSeriesList(boolean willDrawing) {
         List<Series> seriess = new ArrayList<Series>();
         seriess.add(getRandomSeries("浦东浦东浦东浦东浦东浦东", Color.LTGRAY, willDrawing));
         seriess.add(getRandomSeries("陆家嘴", Color.GRAY, willDrawing));
@@ -87,11 +86,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         // seriess.add(getRandomSeries("蓝高小区",Color.RED, false));
         // seriess.add(getRandomSeries("塘桥",Color.GREEN, false));
         // seriess.add(getRandomSeries("浦东",Color.MAGENTA, false));
-        ChartData data = new ChartData();
         int position = 0;
         if (willDrawing) {
             position = 12;
-            data.setLabelTransform(new LabelTransform() {
+            chart.getData().setLabelTransform(new LabelTransform() {
 
                 @Override
                 public String verticalTransform(int valueY) {
@@ -110,16 +108,16 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
             });
         } else {
             position = 36;
-            data.setLabelTransform(new My36Transfer());
+            chart.getData().setLabelTransform(new My36Transfer());
         }
-        data.setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
-        data.setSeriesList(seriess);
-        return data;
+        chart.getData().setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
+        chart.getData().setSeriesList(seriess);
+        chart.refresh();
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        chart.setData(getChartData(!isChecked));
+        getSeriesList(!isChecked);
     }
 
     private class My36Transfer implements LabelTransform {

@@ -15,6 +15,7 @@ public class ChartData {
     private List<Series> seriesList;
     private List<Label> xLabels;
     private List<Label> yLabels;
+    private List<Title> titles;
     private int maxValueY;
     private int minValueY;
     private LabelTransform labelTransform;
@@ -24,9 +25,10 @@ public class ChartData {
     /** 使用哪一个series的横坐标来显示横坐标文本 */
     private int xLabelUsageSeries;
 
-    public ChartData() {
+    ChartData() {
         xLabels = new ArrayList<Label>();
         yLabels = new ArrayList<Label>();
+        titles=new ArrayList<Title>();
         seriesList = new ArrayList<Series>();
         labelTransform = new LabelTransform() {
             @Override
@@ -57,6 +59,10 @@ public class ChartData {
                 throw new IllegalArgumentException("xLabelUsageSeries should greater than seriesList.size()");
             resetXLabels();
             resetYLabels();
+            titles.clear();
+            for(Series series:seriesList){
+                titles.add(series.getTitle());
+            }
         }
     }
 
@@ -84,8 +90,6 @@ public class ChartData {
         }
         int step = (maxValueY - minValueY) / (yLabelCount - 1);
         yLabels.clear();
-        
-        
         minValueY = minValueY - step;
         maxValueY = maxValueY + step;
         step = (maxValueY - minValueY) / (yLabelCount - 1);
@@ -121,7 +125,9 @@ public class ChartData {
     public List<Label> getYLabels() {
         return yLabels;
     }
-
+    public List<Title> getTitles() {
+        return titles;
+    }
     public int getMaxValueY() {
         return maxValueY;
     }
@@ -146,6 +152,7 @@ public class ChartData {
         this.xLabelUsageSeries = xLabelUsageSeries;
     }
     public void setMarker(Marker marker) {
+        titles.add(marker);
         this.marker = marker;
     }
     public Marker getMarker() {

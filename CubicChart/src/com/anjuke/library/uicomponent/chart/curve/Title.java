@@ -18,7 +18,7 @@ class Title {
     public float circleCoordinateX;
     /**圆点对应的坐标Y*/
     public float circleCoordinateY;
-    /**圆点的颜色*/
+    /**颜色*/
     public int color;
     /**圆点的半径*/
     public int radius;
@@ -35,6 +35,7 @@ class Title {
         if(textWidth<=maxWidth)
             return;
         while(textWidth>maxWidth){
+//            Log.d("zqt", "text="+text);
             text=text.substring(0, text.length()-1);
             textWidth=textCircleWidth(paint);
         }
