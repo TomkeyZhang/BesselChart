@@ -1,6 +1,7 @@
 
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Series {
@@ -10,6 +11,8 @@ public class Series {
     private int color;
     /** 序列点集合 */
     private List<Point> points;
+    /** 贝塞尔曲线点 */
+    private List<Point> besselPoints;
 
     /**
      * @param color 曲线的颜色
@@ -19,6 +22,7 @@ public class Series {
         this.title=new Title(title, color);
     	this.color = color;
         this.points = points;
+        this.besselPoints = new ArrayList<Point>();
     }
     public Title getTitle() {
 		return title;
@@ -30,6 +34,9 @@ public class Series {
     public List<Point> getPoints() {
         return points;
     }
-    
+
+    public List<Point> getBesselPoints() {
+        return besselPoints;
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -9,15 +9,15 @@ import android.graphics.Rect;
  */
 class Title {
     /**文本对应的坐标X*/
-    public float textCoordinateX;
+    public float textX;
     /**文本对应的坐标Y*/
-    public float textCoordinateY;
+    public float textY;
     /**文本*/
     public String text;
     /**圆点对应的坐标X*/
-    public float circleCoordinateX;
+    public float circleX;
     /**圆点对应的坐标Y*/
-    public float circleCoordinateY;
+    public float circleY;
     /**颜色*/
     public int color;
     /**圆点的半径*/
@@ -40,9 +40,10 @@ class Title {
             textWidth=textCircleWidth(paint);
         }
         text=text.substring(0, text.length()-1)+"...";
+        textCircleWidth(paint);
     }
     private int textCircleWidth(Paint paint){
         paint.getTextBounds(text, 0, text.length(), textRect);
-        return textRect.width()+(radius+circleTextPadding)*2;
+        return textRect.width() + (radius + circleTextPadding) * 2;
     }
 }

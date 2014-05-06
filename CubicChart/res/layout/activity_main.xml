@@ -16,10 +16,11 @@
             android:textOff="1年"
             android:textOn="3年" />
 
-        <com.anjuke.library.uicomponent.chart.curve.BesselChart
+        <com.anjuke.library.uicomponent.chart.bessel.BesselChart
             android:id="@+id/chart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             app:verticalAxisPosition="right" />
 
         <View

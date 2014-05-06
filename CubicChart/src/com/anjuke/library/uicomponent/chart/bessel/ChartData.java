@@ -1,5 +1,5 @@
 
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ public class ChartData {
     private List<Title> titles;
     private int maxValueY;
     private int minValueY;
+    private int maxPointsCount;
     private LabelTransform labelTransform;
     /** 纵坐标显示文本的数量 */
     private int yLabelCount;
@@ -60,8 +61,11 @@ public class ChartData {
             resetXLabels();
             resetYLabels();
             titles.clear();
+
             for(Series series:seriesList){
                 titles.add(series.getTitle());
+                if (series.getPoints().size() > maxPointsCount)
+                    maxPointsCount = series.getPoints().size();
             }
         }
     }
@@ -158,6 +162,10 @@ public class ChartData {
     public Marker getMarker() {
         return marker;
     }
+
+    public int getMaxPointsCount() {
+        return maxPointsCount;
+    }
     public interface LabelTransform {
         /** 纵坐标显示的文本 */
         String verticalTransform(int valueY);
@@ -170,9 +178,11 @@ public class ChartData {
     }
     class Label {
         /**文本对应的坐标X*/
-        public float coordinateX;
+        public float x;
         /**文本对应的坐标Y*/
-        public float coordinateY;
+        public float y;
+        /** 文本对应的绘制坐标Y */
+        public float drawingY;
         /**文本对应的实际数值*/
         public int value;
         /**文本*/

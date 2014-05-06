@@ -1,5 +1,5 @@
 
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -46,11 +46,11 @@ public class Marker extends Title{
         return rect;
     }
     
-    public Rect updateRect(float coordinateX,float coordinateY,int width,int height) {
-        rect.left = (int) (coordinateX - width / 2);
-        rect.right = (int) (coordinateX + width / 2);
-        rect.top = (int) (coordinateY - height / 2);
-        rect.bottom = (int) (coordinateY + height / 2);
+    public Rect updateRect(float x,float y,int width,int height) {
+        rect.left = (int) (x - width / 2);
+        rect.right = (int) (x + width / 2);
+        rect.top = (int) (y - height / 2);
+        rect.bottom = (int) (y + height / 2);
         return rect;
     }
 }

@@ -1,5 +1,5 @@
 
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
 import android.graphics.Color;
 
@@ -10,8 +10,6 @@ import android.graphics.Color;
  * @date :2014年4月17日
  */
 public class ChartStyle {
-    /** 背景颜色 */
-    private int backgroundColor;
     /** 网格线颜色 */
     private int gridColor;
     /** 坐标轴分隔线宽度 */
@@ -25,6 +23,10 @@ public class ChartStyle {
     private float horizontalTitleTextSize;
     /** 横坐标标题文本颜色 */
     private int horizontalTitleTextColor;
+    /** 横坐标标题文本左间距 */
+    private int horizontalTitlePaddingLeft;
+    /** 横坐标标题文本右间距 */
+    private int horizontalTitlePaddingRight;
     
     /** 纵坐标文本大小 */
     private float verticalLabelTextSize;
@@ -36,7 +38,6 @@ public class ChartStyle {
     private int verticalLabelTextColor;
 
     public ChartStyle() {
-        backgroundColor=Color.WHITE;
         gridColor=Color.LTGRAY;
         horizontalTitleTextSize=34;
         horizontalTitleTextColor=Color.GRAY;
@@ -47,6 +48,8 @@ public class ChartStyle {
         verticalLabelTextColor = Color.GRAY;
         verticalLabelTextPaddingRate=0.2f;
         axisLineWidth=2;
+        horizontalTitlePaddingLeft = 20;
+        horizontalTitlePaddingRight = 10;
     }
 
     public float getVerticalLabelTextSize() {
@@ -89,14 +92,6 @@ public class ChartStyle {
 		this.horizontalLabelTextColor = horizontalLabelTextColor;
 	}
 
-    public int getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public void setBackgroundColor(int backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
     public int getGridColor() {
         return gridColor;
     }
@@ -134,4 +129,21 @@ public class ChartStyle {
     public void setAxisLineWidth(int axisLineWidth) {
         this.axisLineWidth = axisLineWidth;
     }
+
+    public int getHorizontalTitlePaddingLeft() {
+        return horizontalTitlePaddingLeft;
+    }
+
+    public int getHorizontalTitlePaddingRight() {
+        return horizontalTitlePaddingRight;
+    }
+
+    public void setHorizontalTitlePaddingLeft(int horizontalTitlePaddingLeft) {
+        this.horizontalTitlePaddingLeft = horizontalTitlePaddingLeft;
+    }
+
+    public void setHorizontalTitlePaddingRight(int horizontalTitlePaddingRight) {
+        this.horizontalTitlePaddingRight = horizontalTitlePaddingRight;
+    }
+
 }

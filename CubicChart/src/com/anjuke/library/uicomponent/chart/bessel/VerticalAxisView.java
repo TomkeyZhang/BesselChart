@@ -1,5 +1,5 @@
 
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import android.graphics.Paint.Align;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.anjuke.library.uicomponent.chart.curve.ChartData.Label;
+import com.anjuke.library.uicomponent.chart.bessel.ChartData.Label;
 
 /**
  * 纵轴
@@ -18,7 +18,7 @@ import com.anjuke.library.uicomponent.chart.curve.ChartData.Label;
  * @author tomkeyzhang（qitongzhang@anjuke.com）
  * @date :2014年5月4日
  */
-public class VerticalAxis extends View {
+public class VerticalAxisView extends View {
     public static final int POSITION_LEFT = 0;
     public static final int POSITION_RIGHT = 1;
     private int position = POSITION_RIGHT;
@@ -28,7 +28,7 @@ public class VerticalAxis extends View {
     private BesselCalculator calculator;
 
 
-    public VerticalAxis(Context context,List<Label> labels,ChartStyle style,BesselCalculator calculator) {
+    public VerticalAxisView(Context context,List<Label> labels,ChartStyle style,BesselCalculator calculator) {
         super(context);
         this.calculator=calculator;
         this.labels=labels;
@@ -53,7 +53,7 @@ public class VerticalAxis extends View {
         this.calculator = calculator;
     }
 
-    public void update() {
+    public void updateSize() {
         ViewGroup.LayoutParams lp = getLayoutParams();
         lp.height = calculator.yAxisHeight;
         lp.width = calculator.yAxisWidth;
@@ -68,7 +68,7 @@ public class VerticalAxis extends View {
         if (position == POSITION_LEFT) {
             coordinateX = calculator.yAxisWidth - style.getAxisLineWidth();
         }
-        float startCoordinateY = labels.get(0).coordinateY;
+        float startCoordinateY = labels.get(0).y;
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(style.getAxisLineWidth());
         paint.setColor(style.getVerticalLabelTextColor());
@@ -77,7 +77,7 @@ public class VerticalAxis extends View {
         canvas.drawLine(coordinateX, startCoordinateY, coordinateX, calculator.height
                 , paint);
         for (Label label : labels) {
-            canvas.drawText(label.text, label.coordinateX, label.coordinateY
+            canvas.drawText(label.text, label.x, label.drawingY
                     , paint);
         }
     }

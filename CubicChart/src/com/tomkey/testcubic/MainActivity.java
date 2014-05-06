@@ -19,11 +19,11 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
-import com.anjuke.library.uicomponent.chart.curve.BesselChart;
-import com.anjuke.library.uicomponent.chart.curve.ChartData.LabelTransform;
-import com.anjuke.library.uicomponent.chart.curve.Marker;
-import com.anjuke.library.uicomponent.chart.curve.Point;
-import com.anjuke.library.uicomponent.chart.curve.Series;
+import com.anjuke.library.uicomponent.chart.bessel.BesselChart;
+import com.anjuke.library.uicomponent.chart.bessel.ChartData.LabelTransform;
+import com.anjuke.library.uicomponent.chart.bessel.Marker;
+import com.anjuke.library.uicomponent.chart.bessel.Point;
+import com.anjuke.library.uicomponent.chart.bessel.Series;
 
 public class MainActivity extends Activity implements OnCheckedChangeListener {
     BesselChart chart;
@@ -37,7 +37,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         chart = (BesselChart) findViewById(R.id.chart);
         button = (ToggleButton) findViewById(R.id.toggle_btn);
         button.setOnCheckedChangeListener(this);
-//         startActivity(new Intent(this, CubicActivity.class));
+        // startActivity(new Intent(this, CubicActivity.class));
         // chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
         // chart.setData(getChartData(true));
         // chart.setVelocityX(1.2f);
@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
             public void run() {
 //                chart.setData(getChartData(true));
                 getSeriesList(true);
+                // chart.setDrawBesselPoint(true);
             }
         }, 1000);
     }
@@ -58,8 +59,11 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
             for (int i = 0; i < 12; i++) {
                 if (i != 3)
                     points.add(new Point(i + 1, 20000 + 1000 * random.nextInt(10), true));
-                else
-                    points.add(new Point(i + 1, 0, false));
+                else {
+                    boolean tag = random.nextInt(10) > 5;
+                    points.add(new Point(i + 1, tag ? 21000 : 0, tag));
+                }
+
             }
         } else {
             for (int i = 0; i < 36; i++) {
@@ -68,6 +72,9 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
                 else
                     points.add(new Point(i + 1, 20000 + 1000 * random.nextInt(10), i % 3 == 1));
             }
+        }
+        for (Point point : points) {
+            com.anjuke.library.uicomponent.chart.bessel.Log.d("getRandomSeries valueY=" + point.valueY);
         }
         return new Series(title, color, points);
     }
@@ -80,7 +87,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 
     private void getSeriesList(boolean willDrawing) {
         List<Series> seriess = new ArrayList<Series>();
-        seriess.add(getRandomSeries("浦东浦东浦东浦东浦东浦东", Color.LTGRAY, willDrawing));
+        seriess.add(getRandomSeries("浦东浦东浦东浦东浦东浦东浦东", Color.LTGRAY, willDrawing));
         seriess.add(getRandomSeries("陆家嘴", Color.GRAY, willDrawing));
         seriess.add(getRandomSeries("奥林匹克花园园快速拉卡卡机的撒娇", Color.RED, willDrawing));
         // seriess.add(getRandomSeries("蓝高小区",Color.RED, false));
@@ -110,8 +117,8 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
             position = 36;
             chart.getData().setLabelTransform(new My36Transfer());
         }
-        chart.getData().setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
         chart.getData().setSeriesList(seriess);
+        chart.getData().setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
         chart.refresh();
     }
 

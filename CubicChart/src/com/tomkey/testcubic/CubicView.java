@@ -83,10 +83,10 @@ public class CubicView extends View {
         Point p0=points[i-1];
         Point p1=points[i];
         Point p2=points[i+1];
-        float k=(p2.x-p1.x)/(p1.x-p0.x);//为了支持x轴间距不均匀的情况
+        // float k=(p2.x-p1.x)/(p1.x-p0.x);//为了支持x轴间距不均匀的情况
         list.add(new Point(p1.x-(p1.x-p0.x)*ratio, p1.y-(p1.y-p0.y)*ratio));
         list.add(p1);
-        list.add(new Point(p1.x+(p1.x-p0.x)*ratio*k, p1.y+(p1.y-p0.y)*ratio*k));
+        list.add(new Point(p1.x + (p2.x - p1.x) * ratio, p1.y + (p2.y - p1.y) * ratio));
     }
     private void compute(){
         

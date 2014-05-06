@@ -1,5 +1,5 @@
 
-package com.anjuke.library.uicomponent.chart.curve;
+package com.anjuke.library.uicomponent.chart.bessel;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -18,15 +18,15 @@ public class BesselChart extends LinearLayout {
     /** 贝塞尔曲线图 */
     private BesselChartView besselChartView;
     /** 纵轴 */
-    private VerticalAxis verticalAxis;
+    private VerticalAxisView verticalAxis;
     /** 横向说明 */
-    private HorizontalLegend horizontalLegend;
+    private HorizontalLegendView horizontalLegend;
     /** 动画对象 */
     private AnimateRunnable animateRunnable;
     /** 带纵轴的贝塞尔曲线图 */
     private LinearLayout besselChartLayout;
     /** 横轴的位置 */
-    private int position = VerticalAxis.POSITION_RIGHT;
+    private int position = VerticalAxisView.POSITION_RIGHT;
     /** 曲线图绘制的计算信息 */
     private BesselCalculator calculator;
     /** 曲线图的样式 */
@@ -37,7 +37,7 @@ public class BesselChart extends LinearLayout {
     public BesselChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChartStyle);
-        position = a.getInt(R.styleable.ChartStyle_verticalAxisPosition, VerticalAxis.POSITION_RIGHT);
+        position = a.getInt(R.styleable.ChartStyle_verticalAxisPosition, VerticalAxisView.POSITION_RIGHT);
         a.recycle();
         init();
     }
@@ -55,12 +55,12 @@ public class BesselChart extends LinearLayout {
         animateRunnable = new AnimateRunnable();
         besselChartLayout = new LinearLayout(getContext());
         besselChartView = new BesselChartView(getContext(), data, style, calculator);
-        verticalAxis = new VerticalAxis(getContext(), data.getYLabels(), style, calculator);
-        horizontalLegend = new HorizontalLegend(getContext(), data.getTitles(), style);
+        verticalAxis = new VerticalAxisView(getContext(), data.getYLabels(), style, calculator);
+        horizontalLegend = new HorizontalLegendView(getContext(), data.getTitles(), style, calculator);
         besselChartLayout.setOrientation(LinearLayout.HORIZONTAL);
         verticalAxis.setPosition(position);
         besselChartLayout.addView(verticalAxis, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        if (position == VerticalAxis.POSITION_LEFT) {
+        if (position == VerticalAxisView.POSITION_LEFT) {
             besselChartLayout.addView(besselChartView, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
         } else {
             besselChartLayout.addView(besselChartView, 0, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
@@ -98,6 +98,18 @@ public class BesselChart extends LinearLayout {
         refresh(false);
     }
 
+    /**
+     * 设置光滑因子
+     * 
+     * @param smoothness
+     */
+    public void setSmoothness(float smoothness) {
+        calculator.setSmoothness(smoothness);
+    }
+
+    public void setDrawBesselPoint(boolean drawBesselPoint) {
+        besselChartView.setDrawBesselPoint(drawBesselPoint);
+    }
     /***
      * 带动画刷新数据
      * 
@@ -109,7 +121,9 @@ public class BesselChart extends LinearLayout {
             public void run() {
                 calculator.compute(getWidth());// 重新计算图形信息
                 besselChartView.updateHeight();// 更新图形的高度
-                verticalAxis.update();// 更新纵轴的宽高
+                verticalAxis.updateSize();// 更新纵轴的宽高
+                horizontalLegend.updateHeight();// 更新标题的高度
+                horizontalLegend.
 //                setLayoutParams(getLayoutParams());
                 invalidate();
                 if (animate && !animateRunnable.run) {
