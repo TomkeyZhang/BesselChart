@@ -29,7 +29,7 @@ class BesselCalculator {
     /** 横轴的标题的高度 */
     public int xTitleHeight;
     /** 横轴的长度 */
-    public float xAxisWidth;
+    public int xAxisWidth;
     /** 灰色竖线顶点 */
     public Point[] gridPoints;
 
@@ -77,9 +77,18 @@ class BesselCalculator {
      * @param distanceX
      * @param velocityX
      */
-    public void move(float distanceX, float velocityX) {
-        translateX = translateX
-                - distanceX * velocityX;// 计算画布平移距离
+    public void move(float distanceX) {
+        translateX = translateX - distanceX;
+    }
+
+    /**
+     * 平移画布
+     * 
+     * @param distanceX
+     * @param velocityX
+     */
+    public void moveTo(int x) {
+        translateX = x;
     }
 
     public float getTranslateX() {

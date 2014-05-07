@@ -120,17 +120,18 @@ public class BesselChart extends LinearLayout {
             @Override
             public void run() {
                 calculator.compute(getWidth());// 重新计算图形信息
-                besselChartView.updateHeight();// 更新图形的高度
+                besselChartView.updateSize();// 更新图形的
                 verticalAxis.updateSize();// 更新纵轴的宽高
                 horizontalLegend.updateHeight();// 更新标题的高度
-                horizontalLegend.
+                // horizontalLegend.
 //                setLayoutParams(getLayoutParams());
                 invalidate();
-                if (animate && !animateRunnable.run) {
-                    // 同一个时间只能有一个动画在跑
-                    animateRunnable.run = true;
-                    new Thread(animateRunnable).start();
-                }
+                besselChartView.animateScrollToEnd();
+                // if (animate && !animateRunnable.run) {
+                // // 同一个时间只能有一个动画在跑
+                // animateRunnable.run = true;
+                // new Thread(animateRunnable).start();
+                // }
             }
         });
     }
@@ -161,7 +162,7 @@ public class BesselChart extends LinearLayout {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                calculator.move(j, 1);
+                calculator.move(j);
                 run = !calculator.ensureTranslation();
                 besselChartView.postInvalidate();
             }

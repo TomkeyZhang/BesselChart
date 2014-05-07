@@ -119,7 +119,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         }
         chart.getData().setSeriesList(seriess);
         chart.getData().setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
-        chart.refresh();
+        chart.refresh(true);
     }
 
     @Override

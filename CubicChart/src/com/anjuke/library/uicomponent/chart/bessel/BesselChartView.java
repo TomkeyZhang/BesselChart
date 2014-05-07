@@ -8,11 +8,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Path;
+import android.support.v4.view.ViewCompat;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Scroller;
 
 import com.anjuke.library.uicomponent.chart.bessel.ChartData.Label;
 
@@ -34,12 +36,12 @@ class BesselChartView extends View {
     /** 曲线图的数据 */
     private ChartData data;
 
-    /** 滚动的速度 */
-    private float velocityX;
 
     private GestureDetector detector;
     /** 是否绘制全部贝塞尔结点 */
     private boolean drawBesselPoint;
+    private Scroller scroller;
+    private boolean enableScroll;
 
     public BesselChartView(Context context, ChartData data, ChartStyle style, BesselCalculator calculator) {
         super(context);
@@ -48,30 +50,62 @@ class BesselChartView extends View {
         this.style = style;
         this.paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.curvePath = new Path();
-        this.velocityX = 1.2f;
         this.drawBesselPoint = false;
+        this.enableScroll = true;
+        this.scroller = new Scroller(context);
 
         this.detector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 if (Math.abs(distanceX / distanceY) > 1) {
                     getParent().requestDisallowInterceptTouchEvent(true);
-                    BesselChartView.this.calculator.move(distanceX, velocityX);
+                    BesselChartView.this.calculator.move(distanceX);
                     invalidate();
+                } else {
+                    Log.d("onScroll " + Math.abs(distanceX / distanceY));
                 }
-                return super.onScroll(e1, e2, distanceX, distanceY);
+                return true;
+            }
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                scroller.fling((int) BesselChartView.this.calculator.getTranslateX(), 0, (int) velocityX, 0, -getWidth(), 0, 0, 0);
+                ViewCompat.postInvalidateOnAnimation(BesselChartView.this);
+                return true;
+            }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                scroller.forceFinished(true);
+                ViewCompat.postInvalidateOnAnimation(BesselChartView.this);
+                return true;
             }
         });
     }
 
+    public void animateScrollToEnd() {
+        // calculator.moveTo(0);
+        // ViewCompat.postInvalidateOnAnimation(BesselChartView.this);
+        Log.d("calculator.xAxisWidth / 2=" + calculator.xAxisWidth / 2);
+        scroller.startScroll(0, 0, -calculator.xAxisWidth / 2, 0, 7000);
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        detector.onTouchEvent(event);
-        return event.getAction() == MotionEvent.ACTION_DOWN;
+        if (enableScroll)
+            return detector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+    @Override
+    public void computeScroll() {
+        if (enableScroll && scroller.computeScrollOffset()) {
+            Log.d("computeScroll scroller.getCurrX()=" + scroller.getCurrX());
+            calculator.moveTo(scroller.getCurrX());
+            ViewCompat.postInvalidateOnAnimation(this);
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.d("BesselChartView onDraw");
         if (data.getSeriesList().size() == 0)
             return;
         calculator.ensureTranslation();
@@ -129,10 +163,12 @@ class BesselChartView extends View {
             canvas.drawPath(curvePath, paint);// 绘制光滑曲线
             paint.setStyle(Paint.Style.FILL);
             for (Point point : series.getPoints()) {
-                canvas.drawCircle(point.x, point.y, 5, paint);
-                paint.setAlpha(80);
-                canvas.drawCircle(point.x, point.y, 10, paint);
-                paint.setAlpha(255);
+                if (point.willDrawing) {
+                    canvas.drawCircle(point.x, point.y, 5, paint);
+                    paint.setAlpha(80);
+                    canvas.drawCircle(point.x, point.y, 10, paint);
+                    paint.setAlpha(255);
+                }
             }// 绘制结点
             if (drawBesselPoint) {
                 for (Point point : series.getBesselPoints()) {
@@ -160,16 +196,18 @@ class BesselChartView extends View {
         }
     }
 
-    public void updateHeight() {
+    public void updateSize() {
         LayoutParams lp = getLayoutParams();
         lp.height = calculator.height;
+        lp.width = calculator.xAxisWidth;
         setLayoutParams(lp);
     }
 
     public void setDrawBesselPoint(boolean drawBesselPoint) {
         this.drawBesselPoint = drawBesselPoint;
     }
-    public void setVelocityX(float velocityX) {
-        this.velocityX = velocityX;
+
+    public void setEnableScroll(boolean enableScroll) {
+        this.enableScroll = enableScroll;
     }
 }
