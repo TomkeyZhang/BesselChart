@@ -1,4 +1,4 @@
 CubicChart
 ==========
 
-光滑的房价走势图
+Anjuke Android App房价模块中的光滑房价走势图
