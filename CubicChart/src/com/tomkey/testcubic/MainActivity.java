@@ -41,13 +41,13 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         // chart.getStyle().setGridColor(Color.parseColor("#66CCCCCC"));
         // chart.setData(getChartData(true));
         // chart.setVelocityX(1.2f);
-        // chart.setSmoothness(0.5f);
+        chart.setSmoothness(0.4f);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
 //                chart.setData(getChartData(true));
                 getSeriesList(true);
-                // chart.setDrawBesselPoint(true);
+                chart.setDrawBesselPoint(true);
             }
         }, 1000);
     }
@@ -56,14 +56,17 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         List<Point> points = new ArrayList<Point>();
         Random random = new Random();
         if (willDrawing) {
+            int[] data = new int[] {
+                    25000, 24000, 22000, 23000, 27000, 25000, 29000, 28000, 26000, 25000, 22000, 23000
+            };
             for (int i = 0; i < 12; i++) {
-                if (i != 3)
-                    points.add(new Point(i + 1, 20000 + 1000 * random.nextInt(10), true));
-                else {
-                    boolean tag = random.nextInt(10) > 5;
-                    points.add(new Point(i + 1, tag ? 21000 : 0, tag));
-                }
-
+                // if (i != 3)
+                // points.add(new Point(i + 1, 20000 + 1000 * random.nextInt(10), true));
+                // else {
+                // boolean tag = random.nextInt(10) > 5;
+                // points.add(new Point(i + 1, tag ? 21000 : 0, tag));
+                // }
+                points.add(new Point(i + 1, data[i], true));
             }
         } else {
             for (int i = 0; i < 36; i++) {
@@ -87,9 +90,9 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 
     private void getSeriesList(boolean willDrawing) {
         List<Series> seriess = new ArrayList<Series>();
-        seriess.add(getRandomSeries("浦东浦东浦东浦东浦东浦东浦东", Color.LTGRAY, willDrawing));
-        seriess.add(getRandomSeries("陆家嘴", Color.GRAY, willDrawing));
-        seriess.add(getRandomSeries("奥林匹克花园园快速拉卡卡机的撒娇", Color.RED, willDrawing));
+        // seriess.add(getRandomSeries("浦东浦东浦东浦东浦东浦东浦东", Color.LTGRAY, willDrawing));
+        // seriess.add(getRandomSeries("陆家嘴", Color.GRAY, willDrawing));
+        seriess.add(getRandomSeries("奥林匹克花园", Color.RED, willDrawing));
         // seriess.add(getRandomSeries("蓝高小区",Color.RED, false));
         // seriess.add(getRandomSeries("塘桥",Color.GREEN, false));
         // seriess.add(getRandomSeries("浦东",Color.MAGENTA, false));
