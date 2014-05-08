@@ -249,15 +249,15 @@ class BesselCalculator {
             besselPoints.clear();
             for (int i = 0; i < count; i++) {
                 if (i == 0 || i == count - 1) {
-                    computeHorizontalPoints(i, points, besselPoints);
+                    computeUnMonotonePoints(i, points, besselPoints);
                 } else {
                     Point p0 = points.get(i - 1);
                     Point p1 = points.get(i);
                     Point p2 = points.get(i + 1);
                     if ((p1.y - p0.y) * (p1.y - p2.y) >= 0) {// 极值点
-                        computeHorizontalPoints(i, points, besselPoints);
+                        computeUnMonotonePoints(i, points, besselPoints);
                     } else {
-                        computeVerticalPoints(i, points, besselPoints);
+                        computeMonotonePoints(i, points, besselPoints);
                     }
                 }
             }
@@ -265,7 +265,7 @@ class BesselCalculator {
     }
 
     /** 计算单调情况的贝塞尔结点 */
-    private void computeHorizontalPoints(int i, List<Point> points, List<Point> besselPoints) {
+    private void computeUnMonotonePoints(int i, List<Point> points, List<Point> besselPoints) {
         if (i == 0) {
             Point p1 = points.get(0);
             Point p2 = points.get(1);
@@ -293,7 +293,7 @@ class BesselCalculator {
      * @param points
      * @param besselPoints
      */
-    private void computeVerticalPoints(int i, List<Point> points, List<Point> besselPoints) {
+    private void computeMonotonePoints(int i, List<Point> points, List<Point> besselPoints) {
         Point p0 = points.get(i - 1);
         Point p1 = points.get(i);
         Point p2 = points.get(i + 1);
