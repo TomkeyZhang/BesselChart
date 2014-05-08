@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Path;
@@ -171,10 +172,13 @@ class BesselChartView extends View {
                 }
             }// 绘制结点
             if (drawBesselPoint) {
-                for (Point point : series.getBesselPoints()) {
-                    paint.setAlpha(255);
-                    canvas.drawCircle(point.x, point.y, 5, paint);
-                }// 绘制全部贝塞尔结点
+                for (Point point : list) {
+                    if (!series.getPoints().contains(point)) {
+                        paint.setColor(Color.BLUE);
+                        paint.setAlpha(255);
+                        canvas.drawCircle(point.x, point.y, 5, paint);
+                    }
+                }// 绘制贝塞尔控制结点
             }
         }
     }
