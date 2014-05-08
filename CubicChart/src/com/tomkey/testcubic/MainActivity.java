@@ -47,7 +47,8 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
             public void run() {
 //                chart.setData(getChartData(true));
                 getSeriesList(true);
-                chart.setDrawBesselPoint(true);
+                // chart.setDrawBesselPoint(true);
+                chart.setSmoothness(0.33f);
             }
         }, 1000);
     }
@@ -60,13 +61,13 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
                     25000, 24000, 22000, 23000, 27000, 25000, 29000, 28000, 26000, 25000, 22000, 23000
             };
             for (int i = 0; i < 12; i++) {
-                // if (i != 3)
-                // points.add(new Point(i + 1, 20000 + 1000 * random.nextInt(10), true));
-                // else {
-                // boolean tag = random.nextInt(10) > 5;
-                // points.add(new Point(i + 1, tag ? 21000 : 0, tag));
-                // }
-                points.add(new Point(i + 1, data[i], true));
+                if (i != 3)
+                    points.add(new Point(i + 1, 20000 + 1000 * random.nextInt(10), true));
+                else {
+                    boolean tag = random.nextInt(10) > 5;
+                    points.add(new Point(i + 1, tag ? 21000 : 0, tag));
+                }
+                // points.add(new Point(i + 1, data[i], true));
             }
         } else {
             for (int i = 0; i < 36; i++) {
@@ -90,8 +91,8 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 
     private void getSeriesList(boolean willDrawing) {
         List<Series> seriess = new ArrayList<Series>();
-        // seriess.add(getRandomSeries("浦东浦东浦东浦东浦东浦东浦东", Color.LTGRAY, willDrawing));
-        // seriess.add(getRandomSeries("陆家嘴", Color.GRAY, willDrawing));
+        seriess.add(getRandomSeries("浦东", Color.LTGRAY, willDrawing));
+        seriess.add(getRandomSeries("陆家嘴", Color.GRAY, willDrawing));
         seriess.add(getRandomSeries("奥林匹克花园", Color.RED, willDrawing));
         // seriess.add(getRandomSeries("蓝高小区",Color.RED, false));
         // seriess.add(getRandomSeries("塘桥",Color.GREEN, false));
@@ -121,7 +122,8 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
             chart.getData().setLabelTransform(new My36Transfer());
         }
         chart.getData().setSeriesList(seriess);
-        chart.getData().setMarker(new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher), "该房源", 30, 30));
+        chart.getData().setMarker(
+                new Marker(Color.GREEN, position, 23000, BitmapFactory.decodeResource(getResources(), R.drawable.ajk_fj_benfangyuan), "该房源", 30, 30));
         chart.refresh(true);
     }
 
