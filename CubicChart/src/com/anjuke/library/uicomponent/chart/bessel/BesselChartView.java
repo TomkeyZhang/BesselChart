@@ -1,4 +1,3 @@
-
 package com.anjuke.library.uicomponent.chart.bessel;
 
 import java.util.List;
@@ -36,13 +35,12 @@ class BesselChartView extends View {
     private ChartStyle style;
     /** 曲线图的数据 */
     private ChartData data;
-
-
+    /** 手势解析 */
     private GestureDetector detector;
     /** 是否绘制全部贝塞尔结点 */
     private boolean drawBesselPoint;
+    /** 滚动计算器 */
     private Scroller scroller;
-    private boolean enableScroll;
 
     public BesselChartView(Context context, ChartData data, ChartStyle style, BesselCalculator calculator) {
         super(context);
@@ -52,7 +50,6 @@ class BesselChartView extends View {
         this.paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.curvePath = new Path();
         this.drawBesselPoint = false;
-        this.enableScroll = true;
         this.scroller = new Scroller(context);
 
         this.detector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
@@ -61,12 +58,12 @@ class BesselChartView extends View {
                 if (Math.abs(distanceX / distanceY) > 1) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     BesselChartView.this.calculator.move(distanceX);
-                    invalidate();
-                } else {
-                    Log.d("onScroll " + Math.abs(distanceX / distanceY));
+                    ViewCompat.postInvalidateOnAnimation(BesselChartView.this);
+                    return true;
                 }
-                return true;
+                return false;
             }
+
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 scroller.fling((int) BesselChartView.this.calculator.getTranslateX(), 0, (int) velocityX, 0, -getWidth(), 0, 0, 0);
@@ -84,21 +81,17 @@ class BesselChartView extends View {
     }
 
     public void animateScrollToEnd() {
-        // calculator.moveTo(0);
-        // ViewCompat.postInvalidateOnAnimation(BesselChartView.this);
-        Log.d("calculator.xAxisWidth / 2=" + calculator.xAxisWidth / 2);
         scroller.startScroll(0, 0, -calculator.xAxisWidth / 2, 0, 7000);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (enableScroll)
-            return detector.onTouchEvent(event);
-        return super.onTouchEvent(event);
+        return detector.onTouchEvent(event);
     }
+
     @Override
     public void computeScroll() {
-        if (enableScroll && scroller.computeScrollOffset()) {
-            Log.d("computeScroll scroller.getCurrX()=" + scroller.getCurrX());
+        if (scroller.computeScrollOffset()) {
             calculator.moveTo(scroller.getCurrX());
             ViewCompat.postInvalidateOnAnimation(this);
         }
@@ -106,7 +99,6 @@ class BesselChartView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("BesselChartView onDraw");
         if (data.getSeriesList().size() == 0)
             return;
         calculator.ensureTranslation();
@@ -211,7 +203,4 @@ class BesselChartView extends View {
         this.drawBesselPoint = drawBesselPoint;
     }
 
-    public void setEnableScroll(boolean enableScroll) {
-        this.enableScroll = enableScroll;
-    }
 }

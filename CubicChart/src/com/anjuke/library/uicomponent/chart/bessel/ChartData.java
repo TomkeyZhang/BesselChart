@@ -172,7 +172,8 @@ public class ChartData {
 
         /** 横坐标显示的文本 */
         String horizontalTransform(int valueX);
-        /** 横坐标显示的文本 */
+
+        /** 是否显示指定位置的横坐标文本 */
         boolean labelDrawing(int valueX);
 
     }
