@@ -264,7 +264,7 @@ class BesselCalculator {
         }
     }
 
-    /** 计算单调情况的贝塞尔结点 */
+    /** 计算非单调情况的贝塞尔结点 */
     private void computeUnMonotonePoints(int i, List<Point> points, List<Point> besselPoints) {
         if (i == 0) {
             Point p1 = points.get(0);
@@ -287,7 +287,7 @@ class BesselCalculator {
     }
 
     /**
-     * 计算非单调情况的贝塞尔结点
+     * 计算单调情况的贝塞尔结点
      * 
      * @param i
      * @param points
