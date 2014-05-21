@@ -126,7 +126,7 @@ class BesselCalculator {
             label.x = x;
             label.y = verticalTextRect.height() * (i + 1)
                     + style.getVerticalLabelTextPadding() * (i + 0.5f);
-            label.drawingY = label.y + verticalTextRect.height() / 2;
+            label.drawingY = label.y + verticalTextRect.height() / 2 - 3;
         }
         yAxisWidth = (int) (verticalTextRect.width() * (1 + style.getVerticalLabelTextPaddingRate() * 2));
         yAxisHeight = verticalTextRect.height() * yLabelCount

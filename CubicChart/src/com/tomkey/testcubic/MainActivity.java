@@ -20,12 +20,13 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
 import com.anjuke.library.uicomponent.chart.bessel.BesselChart;
+import com.anjuke.library.uicomponent.chart.bessel.BesselChart.ChartListener;
 import com.anjuke.library.uicomponent.chart.bessel.ChartData.LabelTransform;
 import com.anjuke.library.uicomponent.chart.bessel.Marker;
 import com.anjuke.library.uicomponent.chart.bessel.Point;
 import com.anjuke.library.uicomponent.chart.bessel.Series;
 
-public class MainActivity extends Activity implements OnCheckedChangeListener {
+public class MainActivity extends Activity implements OnCheckedChangeListener, ChartListener {
     BesselChart chart;
     ToggleButton button;
     Handler handler = new Handler();
@@ -42,6 +43,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         // chart.setData(getChartData(true));
         // chart.setVelocityX(1.2f);
         chart.setSmoothness(0.4f);
+        chart.setChartListener(this);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -153,5 +155,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
         public boolean labelDrawing(int valueX) {
             return valueX % 3 == 0;
         }
+    }
+
+    @Override
+    public void onMove() {
+        Log.d("zqt", "onMove");
     }
 }

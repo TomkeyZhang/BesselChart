@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Scroller;
 
+import com.anjuke.library.uicomponent.chart.bessel.BesselChart.ChartListener;
 import com.anjuke.library.uicomponent.chart.bessel.ChartData.Label;
 
 /**
@@ -41,6 +42,8 @@ class BesselChartView extends View {
     private boolean drawBesselPoint;
     /** 滚动计算器 */
     private Scroller scroller;
+    /** 曲线图事件监听器 */
+    private ChartListener chartListener;
 
     public BesselChartView(Context context, ChartData data, ChartStyle style, BesselCalculator calculator) {
         super(context);
@@ -53,12 +56,18 @@ class BesselChartView extends View {
         this.scroller = new Scroller(context);
 
         this.detector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
+            float lastScrollX = 0f;
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 if (Math.abs(distanceX / distanceY) > 1) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     BesselChartView.this.calculator.move(distanceX);
                     ViewCompat.postInvalidateOnAnimation(BesselChartView.this);
+                    if (e1.getX() != lastScrollX) {
+                        lastScrollX = e1.getX();
+                        if (chartListener != null)
+                            chartListener.onMove();
+                    }
                     return true;
                 }
                 return false;
@@ -80,10 +89,13 @@ class BesselChartView extends View {
         });
     }
 
-    public void animateScrollToEnd() {
-        scroller.startScroll(0, 0, -calculator.xAxisWidth / 2, 0, 7000);
+    public void animateScrollToEnd(int duration) {
+        scroller.startScroll(0, 0, -calculator.xAxisWidth / 2, 0, duration);
     }
 
+    public void setChartListener(ChartListener chartListener) {
+        this.chartListener = chartListener;
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return detector.onTouchEvent(event);

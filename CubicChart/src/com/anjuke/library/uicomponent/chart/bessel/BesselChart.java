@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 
 import com.tomkey.testcubic.R;
 
+
+
 /***
  * 完整的贝塞尔曲线图
  * 
@@ -126,7 +128,7 @@ public class BesselChart extends LinearLayout {
                 // horizontalLegend.
 //                setLayoutParams(getLayoutParams());
                 invalidate();
-                besselChartView.animateScrollToEnd();
+                besselChartView.animateScrollToEnd(5000);
                 // if (animate && !animateRunnable.run) {
                 // // 同一个时间只能有一个动画在跑
                 // animateRunnable.run = true;
@@ -169,4 +171,10 @@ public class BesselChart extends LinearLayout {
         };
     }
 
+    public void setChartListener(ChartListener chartListener) {
+        besselChartView.setChartListener(chartListener);
+    }
+    public interface ChartListener {
+        void onMove();
+    }
 }
